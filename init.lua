@@ -616,6 +616,18 @@ local function onTeamsMessage(wsType, message)
          hs.settings.set("WatchForMeeting.teamsToken", parsed.tokenRefresh)
       end
 
+      if parsed.meetingUpdate and parsed.meetingUpdate.meetingPermissions and parsed.meetingUpdate.meetingPermissions.canPair and not _internal.teamsPairing then
+
+         WatchForMeeting.logger.d("Sending pairing request")
+         _internal.teamsPairing = true
+         _internal.teamsWebsocket:send('{"action":"toggle-mute","parameters":{},"requestId":1}')
+      end
+
+      if parsed.response and parsed.response == "Pairing response resulted in no action" then 
+         WatchForMeeting.logger.d("Didn't pair. Will try again next meeting.")
+         _internal.teamsPairing = false
+      end
+
       if parsed.meetingUpdate and parsed.meetingUpdate.meetingState and not _internal.faking then
          local ms = parsed.meetingUpdate.meetingState
          if ms.isInMeeting then
@@ -645,9 +657,10 @@ local function onTeamsMessage(wsType, message)
 
    elseif wsType == "closed" then
       _internal.teamsWebsocket = nil
+      _internal.teamsPairing = false
       if _internal.running and WatchForMeeting.apps.teams then
-         WatchForMeeting.logger.d("Teams WebSocket closed, reconnecting in 5 seconds")
-         hs.timer.doAfter(5, connectToTeams)
+         WatchForMeeting.logger.d("Teams WebSocket closed, probably because this app was blocked from the Third-party app API in teams.")
+         WatchForMeeting.logger.d("Go to Settings > Privacy > Third-party app API > Manage API and remove the application from block.")
       end
 
    elseif wsType == "fail" then
