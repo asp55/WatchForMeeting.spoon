@@ -275,10 +275,24 @@ _internal.running = false
    --- Number representing which mode WatchForMeeting should be running
    ---
    --- - *0* - Automatic (default)
-   --- -- Monitors Zoom and updates status accordingly
+   --- -- Monitors configured apps (see [apps](#apps)) and updates status accordingly
    --- - *1* - Busy
-   --- -- Fakes a meeting. (Marks as in meeting, and signals that the mic is live, camera is on, and screen is sharing.) Useful when meeting type is not supported (Currently any platform that isn't zoom.)
+   --- -- Fakes a meeting. (Marks as in meeting, and signals that the mic is live, camera is on, and screen is sharing.) Useful when meeting type is not supported.
    _internal.mode = 0
+
+   --- WatchForMeeting.apps
+   --- Variable
+   --- A Table controlling which meeting apps are monitored in automatic mode.
+   ---
+   --- | Key | Description | Default |
+   --- | --- | ----------- | ------- |
+   --- | zoom | Monitor Zoom meetings via menu item polling | _true_ |
+   --- | teams | Monitor Microsoft Teams meetings via local WebSocket API | _false_ |
+   ---
+   --- Changes take effect on the next call to `:start()` or `:restart()`.
+
+   _internal.appsDefaults = { zoom = true, teams = false }
+   _internal.apps = setmetatable({}, {__index=_internal.appsDefaults})
 
    --- WatchForMeeting.zoom
    --- Variable
@@ -306,7 +320,7 @@ _internal.running = false
    WatchForMeeting = setmetatable(WatchForMeeting, {
       --GET
       __index = function (table, key)
-         if(key=="zoom" or key=="meetingState" or key=="faking" or key=="menubar" or key=="mode" or key=="sharing") then
+         if(key=="zoom" or key=="meetingState" or key=="faking" or key=="menubar" or key=="mode" or key=="sharing" or key=="apps") then
             return _internal[key]
          else
             return rawget( table, key )
@@ -331,8 +345,9 @@ _internal.running = false
                table:auto() 
             end
          elseif(key=="sharing") then
-
             _internal.sharing = setmetatable(value, {__index=_internal.sharingDefaults})
+         elseif(key=="apps") then
+            _internal.apps = setmetatable(value, {__index=_internal.appsDefaults})
          else
             return rawset(table, key, value)
          end
@@ -558,10 +573,113 @@ _internal.zoomWindowFilter:subscribe(hs.window.filter.hasWindow,checkMeetingStat
 _internal.zoomWindowFilter:subscribe(hs.window.filter.hasNoWindows,checkMeetingStatus)
 _internal.zoomWindowFilter:subscribe(hs.window.filter.windowDestroyed,checkMeetingStatus)
 _internal.zoomWindowFilter:subscribe(hs.window.filter.windowTitleChanged,checkMeetingStatus)
-_internal.zoomWindowFilter:pause() 
+_internal.zoomWindowFilter:pause()
 
 -------------------------------------------
 -- End of Zoom Monitor
+-------------------------------------------
+
+
+-------------------------------------------
+-- Teams Monitor
+-------------------------------------------
+
+_internal.teamsInMeeting = false
+_internal.teamsWebsocket = nil
+_internal.teamsConnectionId = 0
+
+local function disconnectFromTeams()
+   if _internal.teamsWebsocket then
+      _internal.teamsWebsocket:close()
+      _internal.teamsWebsocket = nil
+   end
+end
+
+-- forward declare connectToTeams so onTeamsMessage can reference it for reconnects
+local connectToTeams = function() end
+
+local function onTeamsMessage(wsType, message)
+   WatchForMeeting.logger.d("Teams WebSocket "..wsType, message)
+
+   if wsType == "open" then
+      WatchForMeeting.logger.d("Connected to Teams local API")
+
+   elseif wsType == "received" then
+      local ok, parsed = pcall(hs.json.decode, message)
+      if not ok then
+         WatchForMeeting.logger.w("Failed to parse Teams message: "..message)
+         return
+      end
+
+      if parsed.tokenRefresh then
+         WatchForMeeting.logger.d("Teams token refreshed")
+         hs.settings.set("WatchForMeeting.teamsToken", parsed.tokenRefresh)
+      end
+
+      if parsed.meetingUpdate and parsed.meetingUpdate.meetingState and not _internal.faking then
+         local ms = parsed.meetingUpdate.meetingState
+         if ms.isInMeeting then
+            local newState = {
+               mic_open = not ms.isMuted,
+               video_on = ms.isVideoOn,
+               sharing = ms.isSharing
+            }
+            if (not _internal.teamsInMeeting) or
+               (_internal.meetingState.mic_open ~= newState.mic_open) or
+               (_internal.meetingState.video_on ~= newState.video_on) or
+               (_internal.meetingState.sharing ~= newState.sharing) then
+               _internal.teamsInMeeting = true
+               _internal.meetingState = newState
+               _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
+               updateCallbacks()
+            end
+         else
+            if _internal.teamsInMeeting then
+               _internal.teamsInMeeting = false
+               _internal.meetingState = false
+               _internal.updateMenuIcon(false)
+               updateCallbacks()
+            end
+         end
+      end
+
+   elseif wsType == "closed" then
+      _internal.teamsWebsocket = nil
+      if _internal.running and WatchForMeeting.apps.teams then
+         WatchForMeeting.logger.d("Teams WebSocket closed, reconnecting in 5 seconds")
+         hs.timer.doAfter(5, connectToTeams)
+      end
+
+   elseif wsType == "fail" then
+      _internal.teamsWebsocket = nil
+      if _internal.running and WatchForMeeting.apps.teams then
+         WatchForMeeting.logger.d("Teams not available, retrying in 30 seconds")
+         hs.timer.doAfter(30, connectToTeams)
+      end
+   end
+end
+
+connectToTeams = function()
+   -- Increment the connection ID before closing, so any callbacks from the
+   -- previous connection are ignored even if close() fires synchronously.
+   _internal.teamsConnectionId = _internal.teamsConnectionId + 1
+   local myId = _internal.teamsConnectionId
+   if _internal.teamsWebsocket then
+      _internal.teamsWebsocket:close()
+      _internal.teamsWebsocket = nil
+   end
+   local token = hs.settings.get("WatchForMeeting.teamsToken") or ""
+   local url = "ws://localhost:8124?token="..token.."&protocol-version=2.0.0&manufacturer=Hammerspoon&device=WatchForMeeting&app=WatchForMeeting&app-version="..WatchForMeeting.version
+   WatchForMeeting.logger.d("Connecting to Teams")
+   _internal.teamsWebsocket = hs.websocket.new(url, function(wsType, message)
+      if myId == _internal.teamsConnectionId then
+         onTeamsMessage(wsType, message)
+      end
+   end)
+end
+
+-------------------------------------------
+-- End of Teams Monitor
 -------------------------------------------
 
 
@@ -722,9 +840,10 @@ function WatchForMeeting:stop()
  
    _internal.meetingMenuBar:removeFromMenuBar()
    _internal.zoomWindowFilter:pause()
+   disconnectFromTeams()
    return self
 end
- 
+
 --- WatchForMeeting:start()
 --- Method
 --- Restarts a WatchForMeeting object
@@ -756,30 +875,40 @@ function WatchForMeeting:auto()
    if(_internal.running) then
       _internal.faking = false
       _internal.meetingState = false
-      startStopWatchMeeting()
-      
+      _internal.teamsInMeeting = false
+
+      if(WatchForMeeting.apps.zoom) then
+         startStopWatchMeeting()
+      end
+
       _internal.meetingMenuBar:setMenu({
          { title = "Meeting Status:", disabled = true },
          { title = "Automatic", checked = true  },
          { title = "Busy", checked = false, fn=function() WatchForMeeting:fake() end }
       })
-   
-   
+
       --Update everything
       _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
       updateCallbacks()
-   
-      --turn on the zoom window monitor
-      _internal.zoomWindowFilter:resume()
+
+      if(WatchForMeeting.apps.zoom) then
+         _internal.zoomWindowFilter:resume()
+      else
+         _internal.zoomWindowFilter:pause()
+      end
+
+      if(WatchForMeeting.apps.teams and not _internal.teamsWebsocket) then
+         connectToTeams()
+      end
    end
-   
+
    return self
 end
  
 
 --- WatchForMeeting:fake(mic_open, video_on, sharing)
 --- Method
---- Disables monitoring and reports as being in a meeting. Useful when meeting type is not supported (currently any platform that isn't zoom.)
+--- Disables monitoring and reports as being in a meeting. Useful when meeting type is not supported.
 ---
 --- Parameters:
 ---  * mic_open - A boolean indicating if the mic is open
