@@ -700,17 +700,17 @@ _internal.connectionAttempts = 0
 _internal.connectionError = false
 
 
---Declare function before start connection because they're circular
-local function retryConnection()
-end
-local function stopConnection()
+-- forward declare reconnectToSharing so onSharingMessage can reference it for reconnects
+local reconnectToSharing = function() end
+
+local function disconnectFromSharing()
    if(_internal.server) then
       if(getmetatable(_internal.server).stop) then _internal.server:stop() end
       if(getmetatable(_internal.server).close) then _internal.server:close() end
    end
 end
 
-local function serverWebsocketCallback(type, message)
+local function onSharingMessage(type, message)
    if(type=="open") then
       _internal.websocketStatus = "open"
       _internal.connectionAttempts = 0
@@ -720,45 +720,45 @@ local function serverWebsocketCallback(type, message)
    elseif(type == "closed" and _internal.running) then
       _internal.websocketStatus = "closed"
       if(_internal.connectionError) then
-         WatchForMeeting.logger.d("Lost connection to websocket, will not reattempt due to error")
+         WatchForMeeting.logger.d("Lost connection to sharing websocket, will not reattempt due to error")
       else
-         WatchForMeeting.logger.d("Lost connection to websocket, attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds")
-         retryConnection()
+         WatchForMeeting.logger.d("Lost connection to sharing websocket, attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds")
+         reconnectToSharing()
       end
    elseif(type == "fail") then
       _internal.websocketStatus = "fail"
       if(WatchForMeeting.sharing.maxConnectionAttempts > 0) then
-         WatchForMeeting.logger.d("Could not connect to websocket server. attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds. (Attempt ".._internal.connectionAttempts.."/"..WatchForMeeting.sharing.maxConnectionAttempts..")")
+         WatchForMeeting.logger.d("Could not connect to sharing websocket server. attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds. (Attempt ".._internal.connectionAttempts.."/"..WatchForMeeting.sharing.maxConnectionAttempts..")")
       else
-         WatchForMeeting.logger.d("Could not connect to websocket server. attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds. (Attempt ".._internal.connectionAttempts..")")
+         WatchForMeeting.logger.d("Could not connect to sharing websocket server. attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds. (Attempt ".._internal.connectionAttempts..")")
       end
-      retryConnection()
+      reconnectToSharing()
    elseif(type == "received") then
       local parsed = hs.json.decode(message);
       if(parsed.error) then
          _internal.connectionError = true;
          if(parsed.errorType == "badkey") then
-            stopConnection()
+            disconnectFromSharing()
             hs.showError("")
             WatchForMeeting.logger.e("WatchForMeeting.sharing.key not valid. Make sure that key has been established on the server.")
          end
       else
-         WatchForMeeting.logger.d("Websocket Message received: ", hs.inspect.inspect(parsed));
+         WatchForMeeting.logger.d("Sharing Websocket Message received: ", hs.inspect.inspect(parsed));
       end
 
    else
-      WatchForMeeting.logger.d("Websocket Callback "..type, message) 
+      WatchForMeeting.logger.d("Sharing Websocket Callback "..type, message) 
    end
 end
 
 
-local function startConnection() 
+local function connectToSharing() 
    if(WatchForMeeting.sharing) then
       if(WatchForMeeting.sharing.useServer) then
          WatchForMeeting.logger.d("Connecting to server at "..WatchForMeeting.sharing.serverURL)
          _internal.connectionAttempts = _internal.connectionAttempts + 1
          _internal.websocketStatus = "connecting"
-         _internal.server = hs.websocket.new(WatchForMeeting.sharing.serverURL, serverWebsocketCallback);
+         _internal.server = hs.websocket.new(WatchForMeeting.sharing.serverURL, onSharingMessage);
       else
          WatchForMeeting.logger.d("Starting Self Hosted Server on port "..WatchForMeeting.sharing.port)
          _internal.server = hs.httpserver.new()
@@ -771,15 +771,15 @@ local function startConnection()
    end
 end
 
---redefine retryConnection now that startConnection & stopConnection exist.
-retryConnection = function()
+--redefine reconnectToSharing now that connectToSharing & disconnectFromSharing exist.
+reconnectToSharing = function()
    if(WatchForMeeting.sharing.maxConnectionAttempts > 0 and _internal.connectionAttempts >= WatchForMeeting.sharing.maxConnectionAttempts) then 
       WatchForMeeting.logger.e("Maximum Connection Attempts failed")
-      stopConnection()
+      disconnectFromSharing()
    elseif(_internal.connectionError) then
-      stopConnection()
+      disconnectFromSharing()
    else
-      hs.timer.doAfter(WatchForMeeting.sharing.waitBeforeRetry, startConnection) 
+      hs.timer.doAfter(WatchForMeeting.sharing.waitBeforeRetry, connectToSharing) 
    end
 end
 
@@ -819,7 +819,7 @@ function WatchForMeeting:start()
    if(not _internal.running) then
       _internal.running = true
       if(self.sharing.enabled and validateShareSettings()) then
-         startConnection()
+         connectToSharing()
       end
  
       if(self.menubar.enabled) then
@@ -847,7 +847,7 @@ end
 ---  * The spoon.WatchForMeeting object
 function WatchForMeeting:stop()
    _internal.running = false
-   stopConnection()
+   disconnectFromSharing()
 
    _internal.lastMeetingState = nil
  
