@@ -1039,7 +1039,7 @@
     "Command" : [
 
     ],
-    "doc" : "A Spoon to answer the question\n> Are you in a meeting?\n\nWatches to see if:\n1) Zoom is running\n2) Are you on a call\n3) Are you on mute, is your camera on, and\/or are you screen sharing\n\nAnd then lets you share that information.\n\n# Installation & Basic Usage\nDownload the [Latest Release](https:\/\/github.com\/asp55\/WatchForMeeting\/releases\/latest) and unzip to `~\/.hammerspoon\/Spoons\/`\n\nTo get going right out of the box, in your `~\/.hammerspoon\/init.lua` add these lines:\n```\nhs.loadSpoon(\"WatchForMeeting\")\nspoon.WatchForMeeting:start()\n```\n\nThis will start the spoon monitoring for zoom calls, and come with the default status page, and menubar configurations.",
+    "doc" : "A Spoon to answer the question\n> Are you in a meeting?\n\nWatches to see if:\n1) A supported application is running\n2) Are you on a call\n3) Are you on mute, is your camera on, and\/or are you screen sharing\n\nAnd then lets you share that information.\n\n# Installation & Basic Usage\nDownload the [Latest Release](https:\/\/github.com\/asp55\/WatchForMeeting.spoon\/releases\/latest) and unzip to `~\/.hammerspoon\/Spoons\/`\n\nTo get going right out of the box, in your `~\/.hammerspoon\/init.lua` add these lines:\n```\nhs.loadSpoon(\"WatchForMeeting\")\nspoon.WatchForMeeting:start()\n```\n\nThis will start the spoon monitoring for zoom calls, and come with the default status page, and menubar configurations.",
     "Field" : [
 
     ],

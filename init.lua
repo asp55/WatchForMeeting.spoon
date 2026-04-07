@@ -4,14 +4,14 @@
 --- > Are you in a meeting?
 --- 
 --- Watches to see if:
---- 1) Zoom is running
+--- 1) A supported application is running
 --- 2) Are you on a call
 --- 3) Are you on mute, is your camera on, and/or are you screen sharing
 --- 
 --- And then lets you share that information.
 --- 
 --- # Installation & Basic Usage
---- Download the [Latest Release](https://github.com/asp55/WatchForMeeting/releases/latest) and unzip to `~/.hammerspoon/Spoons/`
+--- Download the [Latest Release](https://github.com/asp55/WatchForMeeting.spoon/releases/latest) and unzip to `~/.hammerspoon/Spoons/`
 --- 
 --- To get going right out of the box, in your `~/.hammerspoon/init.lua` add these lines:
 --- ```
@@ -36,9 +36,9 @@ WatchForMeeting.__index = WatchForMeeting
 
 -- Metadata
 WatchForMeeting.name = "WatchForMeeting"
-WatchForMeeting.version = "2.0.3"
+WatchForMeeting.version = "3.0.0"
 WatchForMeeting.author = "Andrew Parnell <aparnell@gmail.com>"
-WatchForMeeting.homepage = "https://github.com/asp55/WatchForMeeting"
+WatchForMeeting.homepage = "https://github.com/asp55/WatchForMeeting.spoon"
 WatchForMeeting.license = "MIT - https://opensource.org/licenses/MIT"
 
 -- Event callbacks
