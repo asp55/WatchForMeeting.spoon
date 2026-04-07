@@ -4,14 +4,14 @@
 --- > Are you in a meeting?
 --- 
 --- Watches to see if:
---- 1) Zoom is running
+--- 1) A supported application is running
 --- 2) Are you on a call
 --- 3) Are you on mute, is your camera on, and/or are you screen sharing
 --- 
 --- And then lets you share that information.
 --- 
 --- # Installation & Basic Usage
---- Download the [Latest Release](https://github.com/asp55/WatchForMeeting/releases/latest) and unzip to `~/.hammerspoon/Spoons/`
+--- Download the [Latest Release](https://github.com/asp55/WatchForMeeting.spoon/releases/latest) and unzip to `~/.hammerspoon/Spoons/`
 --- 
 --- To get going right out of the box, in your `~/.hammerspoon/init.lua` add these lines:
 --- ```
@@ -36,9 +36,9 @@ WatchForMeeting.__index = WatchForMeeting
 
 -- Metadata
 WatchForMeeting.name = "WatchForMeeting"
-WatchForMeeting.version = "2.0.3"
+WatchForMeeting.version = "3.0.0"
 WatchForMeeting.author = "Andrew Parnell <aparnell@gmail.com>"
-WatchForMeeting.homepage = "https://github.com/asp55/WatchForMeeting"
+WatchForMeeting.homepage = "https://github.com/asp55/WatchForMeeting.spoon"
 WatchForMeeting.license = "MIT - https://opensource.org/licenses/MIT"
 
 -- Event callbacks
@@ -275,10 +275,24 @@ _internal.running = false
    --- Number representing which mode WatchForMeeting should be running
    ---
    --- - *0* - Automatic (default)
-   --- -- Monitors Zoom and updates status accordingly
+   --- -- Monitors configured apps (see [apps](#apps)) and updates status accordingly
    --- - *1* - Busy
-   --- -- Fakes a meeting. (Marks as in meeting, and signals that the mic is live, camera is on, and screen is sharing.) Useful when meeting type is not supported (Currently any platform that isn't zoom.)
+   --- -- Fakes a meeting. (Marks as in meeting, and signals that the mic is live, camera is on, and screen is sharing.) Useful when meeting type is not supported.
    _internal.mode = 0
+
+   --- WatchForMeeting.apps
+   --- Variable
+   --- A Table controlling which meeting apps are monitored in automatic mode.
+   ---
+   --- | Key | Description | Default |
+   --- | --- | ----------- | ------- |
+   --- | zoom | Monitor Zoom meetings via menu item polling | _true_ |
+   --- | teams | Monitor Microsoft Teams meetings via local WebSocket API | _false_ |
+   ---
+   --- Changes take effect on the next call to `:start()` or `:restart()`.
+
+   _internal.appsDefaults = { zoom = true, teams = false }
+   _internal.apps = setmetatable({}, {__index=_internal.appsDefaults})
 
    --- WatchForMeeting.zoom
    --- Variable
@@ -306,7 +320,7 @@ _internal.running = false
    WatchForMeeting = setmetatable(WatchForMeeting, {
       --GET
       __index = function (table, key)
-         if(key=="zoom" or key=="meetingState" or key=="faking" or key=="menubar" or key=="mode" or key=="sharing") then
+         if(key=="zoom" or key=="meetingState" or key=="faking" or key=="menubar" or key=="mode" or key=="sharing" or key=="apps") then
             return _internal[key]
          else
             return rawget( table, key )
@@ -331,8 +345,9 @@ _internal.running = false
                table:auto() 
             end
          elseif(key=="sharing") then
-
             _internal.sharing = setmetatable(value, {__index=_internal.sharingDefaults})
+         elseif(key=="apps") then
+            _internal.apps = setmetatable(value, {__index=_internal.appsDefaults})
          else
             return rawset(table, key, value)
          end
@@ -558,10 +573,126 @@ _internal.zoomWindowFilter:subscribe(hs.window.filter.hasWindow,checkMeetingStat
 _internal.zoomWindowFilter:subscribe(hs.window.filter.hasNoWindows,checkMeetingStatus)
 _internal.zoomWindowFilter:subscribe(hs.window.filter.windowDestroyed,checkMeetingStatus)
 _internal.zoomWindowFilter:subscribe(hs.window.filter.windowTitleChanged,checkMeetingStatus)
-_internal.zoomWindowFilter:pause() 
+_internal.zoomWindowFilter:pause()
 
 -------------------------------------------
 -- End of Zoom Monitor
+-------------------------------------------
+
+
+-------------------------------------------
+-- Teams Monitor
+-------------------------------------------
+
+_internal.teamsInMeeting = false
+_internal.teamsWebsocket = nil
+_internal.teamsConnectionId = 0
+
+local function disconnectFromTeams()
+   if _internal.teamsWebsocket then
+      _internal.teamsWebsocket:close()
+      _internal.teamsWebsocket = nil
+   end
+end
+
+-- forward declare connectToTeams so onTeamsMessage can reference it for reconnects
+local connectToTeams = function() end
+
+local function onTeamsMessage(wsType, message)
+   WatchForMeeting.logger.d("Teams WebSocket "..wsType, message)
+
+   if wsType == "open" then
+      WatchForMeeting.logger.d("Connected to Teams local API")
+
+   elseif wsType == "received" then
+      local ok, parsed = pcall(hs.json.decode, message)
+      if not ok then
+         WatchForMeeting.logger.w("Failed to parse Teams message: "..message)
+         return
+      end
+
+      if parsed.tokenRefresh then
+         WatchForMeeting.logger.d("Teams token refreshed")
+         hs.settings.set("WatchForMeeting.teamsToken", parsed.tokenRefresh)
+      end
+
+      if parsed.meetingUpdate and parsed.meetingUpdate.meetingPermissions and parsed.meetingUpdate.meetingPermissions.canPair and not _internal.teamsPairing then
+
+         WatchForMeeting.logger.d("Sending pairing request")
+         _internal.teamsPairing = true
+         _internal.teamsWebsocket:send('{"action":"toggle-mute","parameters":{},"requestId":1}')
+      end
+
+      if parsed.response and parsed.response == "Pairing response resulted in no action" then 
+         WatchForMeeting.logger.d("Didn't pair. Will try again next meeting.")
+         _internal.teamsPairing = false
+      end
+
+      if parsed.meetingUpdate and parsed.meetingUpdate.meetingState and not _internal.faking then
+         local ms = parsed.meetingUpdate.meetingState
+         if ms.isInMeeting then
+            local newState = {
+               mic_open = not ms.isMuted,
+               video_on = ms.isVideoOn,
+               sharing = ms.isSharing
+            }
+            if (not _internal.teamsInMeeting) or
+               (_internal.meetingState.mic_open ~= newState.mic_open) or
+               (_internal.meetingState.video_on ~= newState.video_on) or
+               (_internal.meetingState.sharing ~= newState.sharing) then
+               _internal.teamsInMeeting = true
+               _internal.meetingState = newState
+               _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
+               updateCallbacks()
+            end
+         else
+            if _internal.teamsInMeeting then
+               _internal.teamsInMeeting = false
+               _internal.meetingState = false
+               _internal.updateMenuIcon(false)
+               updateCallbacks()
+            end
+         end
+      end
+
+   elseif wsType == "closed" then
+      _internal.teamsWebsocket = nil
+      _internal.teamsPairing = false
+      if _internal.running and WatchForMeeting.apps.teams then
+         WatchForMeeting.logger.d("Teams WebSocket closed, probably because this app was blocked from the Third-party app API in teams.")
+         WatchForMeeting.logger.d("Go to Settings > Privacy > Third-party app API > Manage API and remove the application from block.")
+      end
+
+   elseif wsType == "fail" then
+      _internal.teamsWebsocket = nil
+      if _internal.running and WatchForMeeting.apps.teams then
+         WatchForMeeting.logger.d("Teams not available, retrying in 30 seconds")
+         hs.timer.doAfter(30, connectToTeams)
+      end
+   end
+end
+
+connectToTeams = function()
+   -- Increment the connection ID before closing, so any callbacks from the
+   -- previous connection are ignored even if close() fires synchronously.
+   _internal.teamsConnectionId = _internal.teamsConnectionId + 1
+   local myId = _internal.teamsConnectionId
+   if _internal.teamsWebsocket then
+      _internal.teamsWebsocket:close()
+      _internal.teamsWebsocket = nil
+   end
+   local token = hs.settings.get("WatchForMeeting.teamsToken") or ""
+   local url = "ws://localhost:8124?token="..token.."&protocol-version=2.0.0&manufacturer=Hammerspoon&device=WatchForMeeting&app=WatchForMeeting&app-version="..WatchForMeeting.version
+   WatchForMeeting.logger.d("Connecting to Teams")
+   _internal.teamsWebsocket = hs.websocket.new(url, function(wsType, message)
+      if myId == _internal.teamsConnectionId then
+         onTeamsMessage(wsType, message)
+      end
+   end)
+end
+
+-------------------------------------------
+-- End of Teams Monitor
 -------------------------------------------
 
 
@@ -569,17 +700,17 @@ _internal.connectionAttempts = 0
 _internal.connectionError = false
 
 
---Declare function before start connection because they're circular
-local function retryConnection()
-end
-local function stopConnection()
+-- forward declare reconnectToSharing so onSharingMessage can reference it for reconnects
+local reconnectToSharing = function() end
+
+local function disconnectFromSharing()
    if(_internal.server) then
       if(getmetatable(_internal.server).stop) then _internal.server:stop() end
       if(getmetatable(_internal.server).close) then _internal.server:close() end
    end
 end
 
-local function serverWebsocketCallback(type, message)
+local function onSharingMessage(type, message)
    if(type=="open") then
       _internal.websocketStatus = "open"
       _internal.connectionAttempts = 0
@@ -589,45 +720,45 @@ local function serverWebsocketCallback(type, message)
    elseif(type == "closed" and _internal.running) then
       _internal.websocketStatus = "closed"
       if(_internal.connectionError) then
-         WatchForMeeting.logger.d("Lost connection to websocket, will not reattempt due to error")
+         WatchForMeeting.logger.d("Lost connection to sharing websocket, will not reattempt due to error")
       else
-         WatchForMeeting.logger.d("Lost connection to websocket, attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds")
-         retryConnection()
+         WatchForMeeting.logger.d("Lost connection to sharing websocket, attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds")
+         reconnectToSharing()
       end
    elseif(type == "fail") then
       _internal.websocketStatus = "fail"
       if(WatchForMeeting.sharing.maxConnectionAttempts > 0) then
-         WatchForMeeting.logger.d("Could not connect to websocket server. attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds. (Attempt ".._internal.connectionAttempts.."/"..WatchForMeeting.sharing.maxConnectionAttempts..")")
+         WatchForMeeting.logger.d("Could not connect to sharing websocket server. attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds. (Attempt ".._internal.connectionAttempts.."/"..WatchForMeeting.sharing.maxConnectionAttempts..")")
       else
-         WatchForMeeting.logger.d("Could not connect to websocket server. attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds. (Attempt ".._internal.connectionAttempts..")")
+         WatchForMeeting.logger.d("Could not connect to sharing websocket server. attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds. (Attempt ".._internal.connectionAttempts..")")
       end
-      retryConnection()
+      reconnectToSharing()
    elseif(type == "received") then
       local parsed = hs.json.decode(message);
       if(parsed.error) then
          _internal.connectionError = true;
          if(parsed.errorType == "badkey") then
-            stopConnection()
+            disconnectFromSharing()
             hs.showError("")
             WatchForMeeting.logger.e("WatchForMeeting.sharing.key not valid. Make sure that key has been established on the server.")
          end
       else
-         WatchForMeeting.logger.d("Websocket Message received: ", hs.inspect.inspect(parsed));
+         WatchForMeeting.logger.d("Sharing Websocket Message received: ", hs.inspect.inspect(parsed));
       end
 
    else
-      WatchForMeeting.logger.d("Websocket Callback "..type, message) 
+      WatchForMeeting.logger.d("Sharing Websocket Callback "..type, message) 
    end
 end
 
 
-local function startConnection() 
+local function connectToSharing() 
    if(WatchForMeeting.sharing) then
       if(WatchForMeeting.sharing.useServer) then
          WatchForMeeting.logger.d("Connecting to server at "..WatchForMeeting.sharing.serverURL)
          _internal.connectionAttempts = _internal.connectionAttempts + 1
          _internal.websocketStatus = "connecting"
-         _internal.server = hs.websocket.new(WatchForMeeting.sharing.serverURL, serverWebsocketCallback);
+         _internal.server = hs.websocket.new(WatchForMeeting.sharing.serverURL, onSharingMessage);
       else
          WatchForMeeting.logger.d("Starting Self Hosted Server on port "..WatchForMeeting.sharing.port)
          _internal.server = hs.httpserver.new()
@@ -640,15 +771,15 @@ local function startConnection()
    end
 end
 
---redefine retryConnection now that startConnection & stopConnection exist.
-retryConnection = function()
+--redefine reconnectToSharing now that connectToSharing & disconnectFromSharing exist.
+reconnectToSharing = function()
    if(WatchForMeeting.sharing.maxConnectionAttempts > 0 and _internal.connectionAttempts >= WatchForMeeting.sharing.maxConnectionAttempts) then 
       WatchForMeeting.logger.e("Maximum Connection Attempts failed")
-      stopConnection()
+      disconnectFromSharing()
    elseif(_internal.connectionError) then
-      stopConnection()
+      disconnectFromSharing()
    else
-      hs.timer.doAfter(WatchForMeeting.sharing.waitBeforeRetry, startConnection) 
+      hs.timer.doAfter(WatchForMeeting.sharing.waitBeforeRetry, connectToSharing) 
    end
 end
 
@@ -688,7 +819,7 @@ function WatchForMeeting:start()
    if(not _internal.running) then
       _internal.running = true
       if(self.sharing.enabled and validateShareSettings()) then
-         startConnection()
+         connectToSharing()
       end
  
       if(self.menubar.enabled) then
@@ -716,15 +847,16 @@ end
 ---  * The spoon.WatchForMeeting object
 function WatchForMeeting:stop()
    _internal.running = false
-   stopConnection()
+   disconnectFromSharing()
 
    _internal.lastMeetingState = nil
  
    _internal.meetingMenuBar:removeFromMenuBar()
    _internal.zoomWindowFilter:pause()
+   disconnectFromTeams()
    return self
 end
- 
+
 --- WatchForMeeting:start()
 --- Method
 --- Restarts a WatchForMeeting object
@@ -756,30 +888,40 @@ function WatchForMeeting:auto()
    if(_internal.running) then
       _internal.faking = false
       _internal.meetingState = false
-      startStopWatchMeeting()
-      
+      _internal.teamsInMeeting = false
+
+      if(WatchForMeeting.apps.zoom) then
+         startStopWatchMeeting()
+      end
+
       _internal.meetingMenuBar:setMenu({
          { title = "Meeting Status:", disabled = true },
          { title = "Automatic", checked = true  },
          { title = "Busy", checked = false, fn=function() WatchForMeeting:fake() end }
       })
-   
-   
+
       --Update everything
       _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
       updateCallbacks()
-   
-      --turn on the zoom window monitor
-      _internal.zoomWindowFilter:resume()
+
+      if(WatchForMeeting.apps.zoom) then
+         _internal.zoomWindowFilter:resume()
+      else
+         _internal.zoomWindowFilter:pause()
+      end
+
+      if(WatchForMeeting.apps.teams and not _internal.teamsWebsocket) then
+         connectToTeams()
+      end
    end
-   
+
    return self
 end
  
 
 --- WatchForMeeting:fake(mic_open, video_on, sharing)
 --- Method
---- Disables monitoring and reports as being in a meeting. Useful when meeting type is not supported (currently any platform that isn't zoom.)
+--- Disables monitoring and reports as being in a meeting. Useful when meeting type is not supported.
 ---
 --- Parameters:
 ---  * mic_open - A boolean indicating if the mic is open

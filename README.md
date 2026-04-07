@@ -3,14 +3,14 @@ A Spoon for [Hammerspoon](http://hammerspoon.org) to answer the question
 > Are you in a meeting?
 
 Watches to see if:
-1) Zoom is running
+1) A supported application is running
 2) Are you on a call
 3) Are you on mute, is your camera on, and/or are you screen sharing
 
 And then lets you share that information.
 
 # Installation & Basic Usage
-Download the [Latest Release](https://github.com/asp55/WatchForMeeting/releases/latest) and unzip to `~/.hammerspoon/Spoons/`
+Download the [Latest Release](https://github.com/asp55/WatchForMeeting.spoon/releases/latest) and unzip to `~/.hammerspoon/Spoons/`
 
 To get going right out of the box, in your `~/.hammerspoon/init.lua` add these lines:
 ```
@@ -19,6 +19,23 @@ spoon.WatchForMeeting:start()
 ```
 
 This will start the spoon monitoring for zoom calls, and come with the default status page, and menubar configurations.
+
+# Supported Applications & Configuration
+Currently this spoon supports:
+1) Zoom
+2) Microsoft Teams (v2)
+
+## Configuration
+Because this spoon originally only supported Zoom meetings, it is configured by default to watch for zoom. You can change that via the `.apps` table
+
+WatchForMeeting.apps
+Variable
+A Table controlling which meeting apps are monitored in automatic mode.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| zoom | Monitor Zoom meetings via menu item polling | _true_ |
+| teams | Monitor Microsoft Teams meetings via local WebSocket API | _false_ |
 
 # Sharing Status To A Webpage
 
@@ -153,3 +170,6 @@ or
     </tr>
   </tbody>
 </table>
+
+# Credits
+Microsoft Teams support was able to be added thanks to the [documentation of the local websocket api](https://github.com/svrooij/teams-monitor?tab=readme-ov-file#teams-has-a-local-api) by [@svrooij](https://github.com/svrooij)
