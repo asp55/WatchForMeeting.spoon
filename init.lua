@@ -433,7 +433,7 @@ end
 -------------------------------------------
 
 -------------------------------------------
--- Zoom Monitor
+-- Event Emitter
 -------------------------------------------
 
 
@@ -505,6 +505,17 @@ local function updateCallbacks()
    _internal.lastMeetingState = _internal.meetingState
 
 end
+
+
+-------------------------------------------
+-- End Event Emitter
+-------------------------------------------
+
+-------------------------------------------
+-- Zoom Monitor
+-------------------------------------------
+
+_internal.zoomInMeeting = false
 
 local function currentlyInMeeting()
    --If zoom is running and the second menu in zoom's menu bar is "Meeting" then we're in a meeting
