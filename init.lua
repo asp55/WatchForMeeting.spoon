@@ -48,7 +48,8 @@ local events = {
    screensharingOff=true,
 }
 _internal.events = {}
-for k in pairs(events) do WatchForMeeting[k]=k end
+WatchForMeeting.events = {}
+for k in pairs(events) do WatchForMeeting.events[k]=k end
 -------------------------------------------
 -- Declare Variables
 -------------------------------------------
