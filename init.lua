@@ -32,7 +32,61 @@ WatchForMeeting.version = "3.0.0"
 WatchForMeeting.author = "Andrew Parnell <aparnell@gmail.com>"
 WatchForMeeting.homepage = "https://github.com/asp55/WatchForMeeting.spoon"
 WatchForMeeting.license = "MIT - https://opensource.org/licenses/MIT"
+
+
 -- Event callbacks
+
+-------------------------------------------
+-- Declare Event Constants
+-------------------------------------------
+--- WatchForMeeting.events.meetingChange
+--- Constant
+--- Pseudo-event for `WatchForMeeting:subscribe()`: The meeting state has changed
+--- 
+--- WatchForMeeting.events.meetingStarted
+--- Constant
+--- Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has started
+--- 
+--- WatchForMeeting.events.meetingStopped
+--- Constant
+--- Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has ended
+--- 
+--- WatchForMeeting.events.micChange
+--- Constant
+--- Pseudo-event for `WatchForMeeting:subscribe()`: The state of the microphone has changed
+--- 
+--- WatchForMeeting.events.micOn
+--- Constant
+--- Pseudo-event for `WatchForMeeting:subscribe()`: The microphone is live
+--- 
+--- WatchForMeeting.events.micOff
+--- Constant
+--- Pseudo-event for `WatchForMeeting:subscribe()`: The microphone has been muted
+--- 
+--- WatchForMeeting.events.videoChange
+--- Constant
+--- Pseudo-event for `WatchForMeeting:subscribe()`: The state of the camera has changed
+--- 
+--- WatchForMeeting.events.videoOn
+--- Constant
+--- Pseudo-event for `WatchForMeeting:subscribe()`: The camera is on
+--- 
+--- WatchForMeeting.events.videoOff
+--- Constant
+--- Pseudo-event for `WatchForMeeting:subscribe()`: The camera is off
+--- 
+--- WatchForMeeting.events.screensharingChange
+--- Constant
+--- Pseudo-event for `WatchForMeeting:subscribe()`: The state of the screen sharing has changed
+--- 
+--- WatchForMeeting.events.screensharingOn
+--- Constant
+--- Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is on
+--- 
+--- WatchForMeeting.events.screensharingOff
+--- Constant
+--- Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is off
+--- 
 local events = {
    meetingChange=true,
    meetingStarted=true,
@@ -47,9 +101,17 @@ local events = {
    screensharingOn=true,
    screensharingOff=true,
 }
-_internal.events = {}
 WatchForMeeting.events = {}
 for k in pairs(events) do WatchForMeeting.events[k]=k end
+
+-- A table to hold callbacks for each event.
+_internal.eventCallbacks = {}
+
+
+-------------------------------------------
+-- End Declare Event Constants
+-------------------------------------------
+
 -------------------------------------------
 -- Declare Variables
 -------------------------------------------
@@ -385,7 +447,7 @@ end
 -- Event Emitter
 -------------------------------------------
 local function emit(event)
-   local fns=_internal.events[event]
+   local fns=_internal.eventCallbacks[event]
    if fns then
       for fn in pairs(fns) do fn() end
    end
@@ -858,9 +920,9 @@ function WatchForMeeting:subscribe(event, fns)
    if type(fns)~='table' then error('fn must be a function or table of functions',3) end
    for _,fn in pairs(fns) do
       if type(fn)~='function' then error('fn must be a function or table of functions',3) end
-      if not _internal.events[event] then _internal.events[event]={} end
-      if not _internal.events[event][fn] then
-      _internal.events[event][fn]=true
+      if not _internal.eventCallbacks[event] then _internal.eventCallbacks[event]={} end
+      if not _internal.eventCallbacks[event][fn] then
+      _internal.eventCallbacks[event][fn]=true
       WatchForMeeting.logger.df('added callback for event %s',event)
       end
    end
@@ -878,12 +940,12 @@ end
 ---  * The `spoon.WatchForMeeting` object for method chaining
 ---
 function WatchForMeeting:unsubscribe(event,fn)
-   if _internal.events[event] and _internal.events[event][fn] then
+   if _internal.eventCallbacks[event] and _internal.eventCallbacks[event][fn] then
       WatchForMeeting.logger.df('removed callback for event %s',event)
-      _internal.events[event][fn]=nil
-      if not next(_internal.events[event]) then
+      _internal.eventCallbacks[event][fn]=nil
+      if not next(_internal.eventCallbacks[event]) then
          WatchForMeeting.logger.df('no more callbacks for event %s',event)
-         _internal.events[event]=nil
+         _internal.eventCallbacks[event]=nil
       end
    end
    return self
@@ -900,8 +962,8 @@ end
 ---
 function WatchForMeeting:unsubscribeEvent(event)
    if not events[event] then error('invalid event: '..event,3) end
-   if _internal.events[event] then WatchForMeeting.logger.df('removed all callbacks for event %s',event) end
-   _internal.events[event]=nil
+   if _internal.eventCallbacks[event] then WatchForMeeting.logger.df('removed all callbacks for event %s',event) end
+   _internal.eventCallbacks[event]=nil
    return self
  end
 -------------------------------------------
