@@ -88,24 +88,21 @@ WatchForMeeting.license = "MIT - https://opensource.org/licenses/MIT"
 --- Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is off
 --- 
 local events = {
-   meetingChange=true,
-   meetingStarted=true,
-   meetingStopped=true,
-   micChange=true,
-   micOn=true,
-   micOff=true,
-   videoChange=true,
-   videoOn=true,
-   videoOff=true,
-   screensharingChange=true,
-   screensharingOn=true,
-   screensharingOff=true,
+   "meetingChange",
+   "meetingStarted",
+   "meetingStopped",
+   "micChange",
+   "micOn",
+   "micOff",
+   "videoChange",
+   "videoOn",
+   "videoOff",
+   "screensharingChange",
+   "screensharingOn",
+   "screensharingOff",
 }
-WatchForMeeting.events = {}
-for k in pairs(events) do WatchForMeeting.events[k]=k end
 
--- A table to hold callbacks for each event.
-_internal.eventCallbacks = {}
+local EventHandler = dofile(hs.spoons.resourcePath("modules/EventHandler.lua"))(events, WatchForMeeting.name)
 
 
 -------------------------------------------
@@ -121,268 +118,272 @@ _internal.eventCallbacks = {}
 WatchForMeeting.logger = hs.logger.new('WatchMeeting')
 -- private variable to track if spoon is already running or not. (Makes it easier to find local variables)
 _internal.running = false
-   -------------------------------------------
-   -- Special Variables (stored in _internal and accessed through metamethods defined below)
-   -------------------------------------------
-   --- WatchForMeeting.sharing
-   --- Variable
-   --- A Table containing the settings that control sharing.
-   ---
-   --- | Key | Description | Default |
-   --- | --- | ----------- | ------- |
-   --- | enabled | Whether or not sharing is enabled.<br/><br/>When false, the spoon will still monitor meeting status to [meetingState](#meetingState), but you will need to write your own automations for what to do with that info. | _true_ |
-   --- | useServer | Do you want to use an external server? (See *Configuration Options* below) | _false_ |
-   --- | | ↓ _required info when `useServer=false`_ | |
-   --- | port | What port to run the self hosted server when WatchForMeeting.sharing.useServer is false. | _8080_ |
-   --- | | ↓ _required info when `useServer=true`_ | |
-   --- | serverURL | The complete url for the external server, including port. IE: `http://localhost:8080` | _nil_ |
-   --- | key | UUID to identify the room. Value is provided when the room is added on the server side. | _nil_ |
-   --- | maxConnectionAttempts | Maximum number of connection attempts when using an external server. When less than 0, infinite retrys | _-1_ |
-   --- | waitBeforeRetry | Time, in seconds, between connection attempts when using an external server | _5_ |
-   ---
-   --- # Configuration Options
-   --- ## Default
-   --- In order to minimize dependencies, by default this spoon uses a [hs.httpserver](https://www.hammerspoon.org/docs/hs.httpserver.html) to host the status page. This comes with a significant downside of: only the last client to load the page will receive status updates. Any previously connected clients will remain stuck at the last update they received before that client connected.
-   ---
-   --- Once you are running the spoon, assuming you haven't changed the port (and nothing else is running at that location) you can reach your status page at http://localhost:8080
-   ---
-   --- ## Better - MeetingStatusServer
-   --- For a better experience I recommend utilizing an external server to receive updates via websockets, and broadcast them to as many clients as you wish to connect.
-   ---
-   --- For that purpose I've built [http://github.com/asp55/MeetingStatusServer](http://github.com/asp55/MeetingStatusServer) which runs on node.js and can either be run locally as its own thing, or hosted remotely.
-   ---
-   --- If using the external server, you will to create a key to identify your "room" and then provide that information to the spoon.
-   --- In that case, before `spoon.WatchForMeeting:start()` add the following to your `~/.hammerspoon/init.lua`
-   ---
-   --- ```
-   --- spoon.WatchForMeeting.sharing.useServer = true
-   --- spoon.WatchForMeeting.sharing.serverURL="[YOUR SERVER URL]"
-   --- spoon.WatchForMeeting.sharing.key="[YOUR KEY]"
-   --- ```
-   ---
-   --- or
-   ---
-   --- ```
-   --- spoon.WatchForMeeting.sharing = {
-   ---   useServer = true,
-   ---   serverURL = "[YOUR SERVER URL]",
-   ---   key="[YOUR KEY]"
-   --- }
-   --- ```
-   ---
-   --- ## Disable
-   --- If you don't want to broadcast your status to a webpage, simply disable sharing
-   --- ```
-   ---   spoon.WatchForMeeting.sharing = {
-   ---     enabled = false
-   ---   }
-   --- ```
-   ---
-   _internal.sharingDefaults = {
-      enabled = true,
-      useServer = false,
-      port = 8080,
-      serverURL = nil,
-      key = nil,
-      maxConnectionAttempts = -1,  --when less than 0, infinite retrys
-      waitBeforeRetry = 5,
-   }
-   _internal.sharing = setmetatable({}, {__index=_internal.sharingDefaults})
-   --- WatchForMeeting.menubar
-   --- Variable
-   --- A Table containing the settings that control sharing.
-   ---
-   --- | Key | Description | Default |
-   --- | --- | ----------- | ------- |
-   --- | enabled | Whether or not to show the menu bar. | _true_ |
-   --- | color | Whether or not to use color icons. | _true_ |
-   --- | detailed | Whether or not to use the detailed icon set. | _true_ |
-   --- | showFullState | Whether the menubar icon should represent the full state<br/>(IE: Mic On/Off, Video On/Off, & Screen Sharing) | _true_ |
-   ---
-   ---
-   --- ## Icons
-   ---
-   --- <table>
-   ---   <thead>
-   ---   <tr>
-   ---   <th>
-   ---     <code>WatchForMeeting.menuBar = {...}</code> &#8594;
-   ---   </th>
-   ---   <th><code>color=true,</code><br/><code>detailed=true,</code></th>
-   ---   <th><code>color=true,</code><br/><code>detailed=false,</code></th>
-   ---   <th><code>color=false,</code><br/><code>detailed=true,</code></th>
-   ---   <th><code>color=false,</code><br/><code>detailed=false,</code></th>
-   ---   </tr>
-   ---   <tr>
-   ---   <th>State (See: <a href="#meetingState">WatchForMeeting.meetingState</a>) &#8595;
-   ---   </th>
-   ---   <th colspan="4"><code>showFullState=true</code> or <code>showFullState=false</code></th>
-   ---   </tr>
-   ---   </thead>
-   ---   <tbody>
-   ---     <tr>
-   ---       <td>Available</td>
-   ---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Free.png" alt="Free slash Available" height="16" /></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Free.png" alt="Free slash Available" height="16" /></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Free.png" alt="Free slash Available" height="16" /></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Free.png" alt="Free slash Available" height="16" /></td>
-   ---     </tr>
-   ---     <tr>
-   ---       <td>Busy</td>
-   ---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting.png" alt="In meeting, no additional status" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting.png" alt="In meeting, no additional status" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting.png" alt="In meeting, no additional status" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting.png" alt="In meeting, no additional status" height="16"></td>
-   ---     </tr>
-   ---   <tr>
-   ---   <td></td>
-   ---   <th colspan="4"><code>showFullState=true</code> only</th>
-   ---   </tr>
-   ---     <tr>
-   ---       <td>Busy + Mic On</td>
-   ---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting-Mic.png" alt="In meeting, mic:on, video:off, screensharing:off" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting-Mic.png" alt="In meeting, mic:on, video:off, screensharing:off" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting-Mic.png" alt="In meeting, mic:on, video:off, screensharing:off" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting-Mic.png" alt="In meeting, mic:on, video:off, screensharing:off" height="16"></td>
-   ---     </tr>
-   ---     <tr>
-   ---       <td>Busy + Video On</td>
-   ---     <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting-Vid.png" alt="In meeting, mic:off, video:on, screensharing:off" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting-Vid.png" alt="In meeting, mic:off, video:on, screensharing:off" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting-Vid.png" alt="In meeting, mic:off, video:on, screensharing:off" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting-Vid.png" alt="In meeting, mic:off, video:on, screensharing:off" height="16"></td>
-   ---     </tr>
-   ---     <tr>
-   ---       <td>Busy + Screen Sharing</td>
-   ---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting-Screen.png" alt="In meeting, mic:off, video:off, screensharing:on" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting-Screen.png" alt="In meeting, mic:off, video:off, screensharing:on" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting-Screen.png" alt="In meeting, mic:off, video:off, screensharing:on" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting-Screen.png" alt="In meeting, mic:off, video:off, screensharing:on" height="16"></td>
-   ---     </tr>
-   ---     <tr>
-   ---       <td>Busy + Mic On + Video On</td>
-   ---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting-Mic-Vid.png" alt="In meeting, mic:on, video:on, screensharing:off" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting-Mic-Vid.png" alt="In meeting, mic:on, video:on, screensharing:off" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting-Mic-Vid.png" alt="In meeting, mic:on, video:on, screensharing:off" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting-Mic-Vid.png" alt="In meeting, mic:on, video:on, screensharing:off" height="16"></td>
-   ---     </tr>
-   ---     <tr>
-   ---       <td>Busy + Mic On + Screen Sharing</td>
-   ---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting-Mic-Screen.png" alt="In meeting, mic:on, video:off, screensharing:on" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting-Mic-Screen.png" alt="In meeting, mic:on, video:off, screensharing:on" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting-Mic-Screen.png" alt="In meeting, mic:on, video:off, screensharing:on" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting-Mic-Screen.png" alt="In meeting, mic:on, video:off, screensharing:on" height="16"></td>
-   ---     </tr>
-   ---     <tr>
-   ---       <td>Busy + Video On + Screen Sharing</td>
-   ---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting-Vid-Screen.png" alt="In meeting, mic:off, video:on, screensharing:on" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting-Vid-Screen.png" alt="In meeting, mic:off, video:on, screensharing:on" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting-Vid-Screen.png" alt="In meeting, mic:off, video:on, screensharing:on" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting-Vid-Screen.png" alt="In meeting, mic:off, video:on, screensharing:on" height="16"></td>
-   ---     </tr>
-   ---     <tr>
-   ---       <td>Busy + Mic On + Video On + Screen Sharing</td>
-   ---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting-Mic-Vid-Screen.png" alt="In meeting, mic:on, video:on, screensharing:on" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting-Mic-Vid-Screen.png" alt="In meeting, mic:on, video:on, screensharing:on" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting-Mic-Vid-Screen.png" alt="In meeting, mic:on, video:on, screensharing:on" height="16"></td>
-   --- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting-Mic-Vid-Screen.png" alt="In meeting, mic:on, video:on, screensharing:on" height="16"></td>
-   ---     </tr>
-   ---   </tbody>
-   --- </table>
-   _internal.menubarDefaults = {
-      enabled = true,
-      color = true,
-      detailed = true,
-      showFullState = true
-   }
-   _internal.menubar__newIndex = function (_, key, value)
-      if(key=="enabled") then
-         if(value) then
+
+-------------------------------------------
+-- Special Variables (stored in _internal and accessed through metamethods defined below)
+-------------------------------------------
+--- WatchForMeeting.sharing
+--- Variable
+--- A Table containing the settings that control sharing.
+---
+--- | Key | Description | Default |
+--- | --- | ----------- | ------- |
+--- | enabled | Whether or not sharing is enabled.<br/><br/>When false, the spoon will still monitor meeting status to [meetingState](#meetingState), but you will need to write your own automations for what to do with that info. | _true_ |
+--- | useServer | Do you want to use an external server? (See *Configuration Options* below) | _false_ |
+--- | | ↓ _required info when `useServer=false`_ | |
+--- | port | What port to run the self hosted server when WatchForMeeting.sharing.useServer is false. | _8080_ |
+--- | | ↓ _required info when `useServer=true`_ | |
+--- | serverURL | The complete url for the external server, including port. IE: `http://localhost:8080` | _nil_ |
+--- | key | UUID to identify the room. Value is provided when the room is added on the server side. | _nil_ |
+--- | maxConnectionAttempts | Maximum number of connection attempts when using an external server. When less than 0, infinite retrys | _-1_ |
+--- | waitBeforeRetry | Time, in seconds, between connection attempts when using an external server | _5_ |
+---
+--- # Configuration Options
+--- ## Default
+--- In order to minimize dependencies, by default this spoon uses a [hs.httpserver](https://www.hammerspoon.org/docs/hs.httpserver.html) to host the status page. This comes with a significant downside of: only the last client to load the page will receive status updates. Any previously connected clients will remain stuck at the last update they received before that client connected.
+---
+--- Once you are running the spoon, assuming you haven't changed the port (and nothing else is running at that location) you can reach your status page at http://localhost:8080
+---
+--- ## Better - MeetingStatusServer
+--- For a better experience I recommend utilizing an external server to receive updates via websockets, and broadcast them to as many clients as you wish to connect.
+---
+--- For that purpose I've built [http://github.com/asp55/MeetingStatusServer](http://github.com/asp55/MeetingStatusServer) which runs on node.js and can either be run locally as its own thing, or hosted remotely.
+---
+--- If using the external server, you will to create a key to identify your "room" and then provide that information to the spoon.
+--- In that case, before `spoon.WatchForMeeting:start()` add the following to your `~/.hammerspoon/init.lua`
+---
+--- ```
+--- spoon.WatchForMeeting.sharing.useServer = true
+--- spoon.WatchForMeeting.sharing.serverURL="[YOUR SERVER URL]"
+--- spoon.WatchForMeeting.sharing.key="[YOUR KEY]"
+--- ```
+---
+--- or
+---
+--- ```
+--- spoon.WatchForMeeting.sharing = {
+---   useServer = true,
+---   serverURL = "[YOUR SERVER URL]",
+---   key="[YOUR KEY]"
+--- }
+--- ```
+---
+--- ## Disable
+--- If you don't want to broadcast your status to a webpage, simply disable sharing
+--- ```
+---   spoon.WatchForMeeting.sharing = {
+---     enabled = false
+---   }
+--- ```
+---
+_internal.sharingDefaults = {
+   enabled = true,
+   useServer = false,
+   port = 8080,
+   serverURL = nil,
+   key = nil,
+   maxConnectionAttempts = -1,  --when less than 0, infinite retrys
+   waitBeforeRetry = 5,
+}
+_internal.sharing = setmetatable({}, {__index=_internal.sharingDefaults})
+
+--- WatchForMeeting.menubar
+--- Variable
+--- A Table containing the settings that control sharing.
+---
+--- | Key | Description | Default |
+--- | --- | ----------- | ------- |
+--- | enabled | Whether or not to show the menu bar. | _true_ |
+--- | color | Whether or not to use color icons. | _true_ |
+--- | detailed | Whether or not to use the detailed icon set. | _true_ |
+--- | showFullState | Whether the menubar icon should represent the full state<br/>(IE: Mic On/Off, Video On/Off, & Screen Sharing) | _true_ |
+---
+---
+--- ## Icons
+---
+--- <table>
+---   <thead>
+---   <tr>
+---   <th>
+---     <code>WatchForMeeting.menuBar = {...}</code> &#8594;
+---   </th>
+---   <th><code>color=true,</code><br/><code>detailed=true,</code></th>
+---   <th><code>color=true,</code><br/><code>detailed=false,</code></th>
+---   <th><code>color=false,</code><br/><code>detailed=true,</code></th>
+---   <th><code>color=false,</code><br/><code>detailed=false,</code></th>
+---   </tr>
+---   <tr>
+---   <th>State (See: <a href="#meetingState">WatchForMeeting.meetingState</a>) &#8595;
+---   </th>
+---   <th colspan="4"><code>showFullState=true</code> or <code>showFullState=false</code></th>
+---   </tr>
+---   </thead>
+---   <tbody>
+---     <tr>
+---       <td>Available</td>
+---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Free.png" alt="Free slash Available" height="16" /></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Free.png" alt="Free slash Available" height="16" /></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Free.png" alt="Free slash Available" height="16" /></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Free.png" alt="Free slash Available" height="16" /></td>
+---     </tr>
+---     <tr>
+---       <td>Busy</td>
+---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting.png" alt="In meeting, no additional status" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting.png" alt="In meeting, no additional status" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting.png" alt="In meeting, no additional status" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting.png" alt="In meeting, no additional status" height="16"></td>
+---     </tr>
+---   <tr>
+---   <td></td>
+---   <th colspan="4"><code>showFullState=true</code> only</th>
+---   </tr>
+---     <tr>
+---       <td>Busy + Mic On</td>
+---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting-Mic.png" alt="In meeting, mic:on, video:off, screensharing:off" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting-Mic.png" alt="In meeting, mic:on, video:off, screensharing:off" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting-Mic.png" alt="In meeting, mic:on, video:off, screensharing:off" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting-Mic.png" alt="In meeting, mic:on, video:off, screensharing:off" height="16"></td>
+---     </tr>
+---     <tr>
+---       <td>Busy + Video On</td>
+---     <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting-Vid.png" alt="In meeting, mic:off, video:on, screensharing:off" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting-Vid.png" alt="In meeting, mic:off, video:on, screensharing:off" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting-Vid.png" alt="In meeting, mic:off, video:on, screensharing:off" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting-Vid.png" alt="In meeting, mic:off, video:on, screensharing:off" height="16"></td>
+---     </tr>
+---     <tr>
+---       <td>Busy + Screen Sharing</td>
+---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting-Screen.png" alt="In meeting, mic:off, video:off, screensharing:on" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting-Screen.png" alt="In meeting, mic:off, video:off, screensharing:on" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting-Screen.png" alt="In meeting, mic:off, video:off, screensharing:on" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting-Screen.png" alt="In meeting, mic:off, video:off, screensharing:on" height="16"></td>
+---     </tr>
+---     <tr>
+---       <td>Busy + Mic On + Video On</td>
+---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting-Mic-Vid.png" alt="In meeting, mic:on, video:on, screensharing:off" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting-Mic-Vid.png" alt="In meeting, mic:on, video:on, screensharing:off" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting-Mic-Vid.png" alt="In meeting, mic:on, video:on, screensharing:off" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting-Mic-Vid.png" alt="In meeting, mic:on, video:on, screensharing:off" height="16"></td>
+---     </tr>
+---     <tr>
+---       <td>Busy + Mic On + Screen Sharing</td>
+---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting-Mic-Screen.png" alt="In meeting, mic:on, video:off, screensharing:on" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting-Mic-Screen.png" alt="In meeting, mic:on, video:off, screensharing:on" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting-Mic-Screen.png" alt="In meeting, mic:on, video:off, screensharing:on" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting-Mic-Screen.png" alt="In meeting, mic:on, video:off, screensharing:on" height="16"></td>
+---     </tr>
+---     <tr>
+---       <td>Busy + Video On + Screen Sharing</td>
+---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting-Vid-Screen.png" alt="In meeting, mic:off, video:on, screensharing:on" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting-Vid-Screen.png" alt="In meeting, mic:off, video:on, screensharing:on" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting-Vid-Screen.png" alt="In meeting, mic:off, video:on, screensharing:on" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting-Vid-Screen.png" alt="In meeting, mic:off, video:on, screensharing:on" height="16"></td>
+---     </tr>
+---     <tr>
+---       <td>Busy + Mic On + Video On + Screen Sharing</td>
+---       <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Detailed/Meeting-Mic-Vid-Screen.png" alt="In meeting, mic:on, video:on, screensharing:on" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Color/Minimal/Meeting-Mic-Vid-Screen.png" alt="In meeting, mic:on, video:on, screensharing:on" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Detailed/Meeting-Mic-Vid-Screen.png" alt="In meeting, mic:on, video:on, screensharing:on" height="16"></td>
+--- <td><img src="https://raw.githubusercontent.com/asp55/WatchForMeeting/main/menubar-icons/Template/Minimal/Meeting-Mic-Vid-Screen.png" alt="In meeting, mic:on, video:on, screensharing:on" height="16"></td>
+---     </tr>
+---   </tbody>
+--- </table>
+_internal.menubarDefaults = {
+   enabled = true,
+   color = true,
+   detailed = true,
+   showFullState = true
+}
+_internal.menubar__newIndex = function (_, key, value)
+   if(key=="enabled") then
+      if(value) then
+         _internal.meetingMenuBar:returnToMenuBar()
+         _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
+      else
+         _internal.meetingMenuBar:removeFromMenuBar()
+      end
+   else
+      _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
+   end
+end
+_internal.menubar = setmetatable({}, {__index=_internal.menubarDefaults, __newindex=_internal.menubar__newIndex})
+--- WatchForMeeting.mode
+--- Variable
+--- Number representing which mode WatchForMeeting should be running
+---
+--- - *0* - Automatic (default)
+--- -- Monitors configured apps (see [apps](#apps)) and updates status accordingly
+--- - *1* - Busy
+--- -- Fakes a meeting. (Marks as in meeting, and signals that the mic is live, camera is on, and screen is sharing.) Useful when meeting type is not supported.
+_internal.mode = 0
+--- WatchForMeeting.apps
+--- Variable
+--- A Table controlling which meeting apps are monitored in automatic mode.
+---
+--- | Key | Description | Default |
+--- | --- | ----------- | ------- |
+--- | zoom | Monitor Zoom meetings via menu item polling | _true_ |
+--- | teams | Monitor Microsoft Teams meetings via local WebSocket API | _false_ |
+---
+--- Changes take effect on the next call to `:start()` or `:restart()`.
+_internal.appsDefaults = { zoom = true, teams = false }
+_internal.apps = setmetatable({}, {__index=_internal.appsDefaults})
+--- WatchForMeeting.zoom
+--- Variable
+--- (Read-only) The hs.application for zoom if it is running, otherwise nil
+_internal.zoom = nil
+--- WatchForMeeting.meetingState
+--- Variable
+--- (Read-only) Either false (when not in a meeting) or a table (when in a meeting)
+---
+--- | Value                                                                   | Description  |
+--- | ----------------------------------------------------------------------- | -----------  |
+--- | `false`                                                                 | Available    |
+--- | `{mic_open = [Boolean],  video_on = [Boolean], sharing = [Boolean] }`   | Busy         |
+_internal.meetingState = false
+_internal.lastMeetingState = nil;
+--- WatchForMeeting.faking
+--- Variable
+--- (Read-only) Boolean representing if the meeting is real or faked
+-- MetaMethods
+WatchForMeeting = setmetatable(WatchForMeeting, {
+   --GET
+   __index = function (table, key)
+      if(key=="zoom" or key=="meetingState" or key=="faking" or key=="menubar" or key=="mode" or key=="sharing" or key=="apps") then
+         return _internal[key]
+      elseif(key=="events") then
+         return EventHandler.events
+      else
+         return rawget( table, key )
+      end
+   end,
+   --SET
+   __newindex = function (table, key, value)
+      if(key=="zoom" or key=="meetingState" or key=="faking" or key=="events") then --luacheck: ignore 542
+         --skip read-only fields
+      elseif(key=="menubar") then
+         _internal.menubar = setmetatable(value, {__index=_internal.menubarDefaults, __newindex=_internal.menubar__newIndex})
+         if(_internal.menubar.enabled) then
             _internal.meetingMenuBar:returnToMenuBar()
             _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
          else
             _internal.meetingMenuBar:removeFromMenuBar()
          end
+      elseif(key=="mode") then
+         if(value == 1) then
+            table:fake()
+         else
+            table:auto()
+         end
+      elseif(key=="sharing") then
+         _internal.sharing = setmetatable(value, {__index=_internal.sharingDefaults})
+      elseif(key=="apps") then
+         _internal.apps = setmetatable(value, {__index=_internal.appsDefaults})
       else
-         _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
+         return rawset(table, key, value)
       end
    end
-   _internal.menubar = setmetatable({}, {__index=_internal.menubarDefaults, __newindex=_internal.menubar__newIndex})
-   --- WatchForMeeting.mode
-   --- Variable
-   --- Number representing which mode WatchForMeeting should be running
-   ---
-   --- - *0* - Automatic (default)
-   --- -- Monitors configured apps (see [apps](#apps)) and updates status accordingly
-   --- - *1* - Busy
-   --- -- Fakes a meeting. (Marks as in meeting, and signals that the mic is live, camera is on, and screen is sharing.) Useful when meeting type is not supported.
-   _internal.mode = 0
-   --- WatchForMeeting.apps
-   --- Variable
-   --- A Table controlling which meeting apps are monitored in automatic mode.
-   ---
-   --- | Key | Description | Default |
-   --- | --- | ----------- | ------- |
-   --- | zoom | Monitor Zoom meetings via menu item polling | _true_ |
-   --- | teams | Monitor Microsoft Teams meetings via local WebSocket API | _false_ |
-   ---
-   --- Changes take effect on the next call to `:start()` or `:restart()`.
-   _internal.appsDefaults = { zoom = true, teams = false }
-   _internal.apps = setmetatable({}, {__index=_internal.appsDefaults})
-   --- WatchForMeeting.zoom
-   --- Variable
-   --- (Read-only) The hs.application for zoom if it is running, otherwise nil
-   _internal.zoom = nil
-   --- WatchForMeeting.meetingState
-   --- Variable
-   --- (Read-only) Either false (when not in a meeting) or a table (when in a meeting)
-   ---
-   --- | Value                                                                   | Description  |
-   --- | ----------------------------------------------------------------------- | -----------  |
-   --- | `false`                                                                 | Available    |
-   --- | `{mic_open = [Boolean],  video_on = [Boolean], sharing = [Boolean] }`   | Busy         |
-   _internal.meetingState = false
-   _internal.lastMeetingState = nil;
-   --- WatchForMeeting.faking
-   --- Variable
-   --- (Read-only) Boolean representing if the meeting is real or faked
-   -- MetaMethods
-   WatchForMeeting = setmetatable(WatchForMeeting, {
-      --GET
-      __index = function (table, key)
-         if(key=="zoom" or key=="meetingState" or key=="faking" or key=="menubar" or key=="mode" or key=="sharing" or key=="apps") then
-            return _internal[key]
-         else
-            return rawget( table, key )
-         end
-      end,
-      --SET
-      __newindex = function (table, key, value)
-         if(key=="zoom" or key=="meetingState" or key=="faking") then --luacheck: ignore 542
-            --skip writing zoom or meeting state to watchformeeting as they are read-only fields
-         elseif(key=="menubar") then
-            _internal.menubar = setmetatable(value, {__index=_internal.menubarDefaults, __newindex=_internal.menubar__newIndex})
-            if(_internal.menubar.enabled) then
-               _internal.meetingMenuBar:returnToMenuBar()
-               _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
-            else
-               _internal.meetingMenuBar:removeFromMenuBar()
-            end
-         elseif(key=="mode") then
-            if(value == 1) then
-               table:fake()
-            else
-               table:auto()
-            end
-         elseif(key=="sharing") then
-            _internal.sharing = setmetatable(value, {__index=_internal.sharingDefaults})
-         elseif(key=="apps") then
-            _internal.apps = setmetatable(value, {__index=_internal.appsDefaults})
-         else
-            return rawset(table, key, value)
-         end
-      end
-   })
+})
 -------------------------------------------
 -- End of Declare Variables
 -------------------------------------------
@@ -420,6 +421,8 @@ end
 -------------------------------------------
 -- End of Menu Bar
 -------------------------------------------
+
+
 -------------------------------------------
 -- Web Server
 -------------------------------------------
@@ -443,68 +446,71 @@ end
 -------------------------------------------
 -- End Web Server
 -------------------------------------------
+
+
 -------------------------------------------
 -- Event Emitter
 -------------------------------------------
-local function emit(event)
-   local fns=_internal.eventCallbacks[event]
-   if fns then
-      for fn in pairs(fns) do fn() end
-   end
- end
 local function updateCallbacks()
    if(_internal.server and _internal.websocketStatus == "open") then _internal.server:send(composeJsonUpdate(_internal.meetingState)) end
+   
    -- Emit appropriate events
    if type(_internal.meetingState)~=type(_internal.lastMeetingState) then
-      emit(WatchForMeeting.meetingChange)
+      EventHandler:emit(WatchForMeeting.events.meetingChange)
       if _internal.meetingState==false then
          if type(_internal.lastMeetingState)=="table" then
-            emit(WatchForMeeting.micChange)
-            emit(WatchForMeeting.videoChange)
-            emit(WatchForMeeting.screensharingChange)
+            EventHandler:emit(WatchForMeeting.events.micChange)
+            EventHandler:emit(WatchForMeeting.events.videoChange)
+            EventHandler:emit(WatchForMeeting.events.screensharingChange)
             if _internal.lastMeetingState.mic_open then
-               emit(WatchForMeeting.micOff)
+               EventHandler:emit(WatchForMeeting.events.micOff)
             end
             if _internal.lastMeetingState.video_on then
-               emit(WatchForMeeting.videoOff)
+               EventHandler:emit(WatchForMeeting.events.videoOff)
             end
             if _internal.lastMeetingState.sharing then
-               emit(WatchForMeeting.screensharingOff)
+               EventHandler:emit(WatchForMeeting.events.screensharingOff)
             end
          end
-         emit(WatchForMeeting.meetingStopped)
+
+         EventHandler:emit(WatchForMeeting.events.meetingStopped)
       else
-         emit(WatchForMeeting.meetingStarted)
+         EventHandler:emit(WatchForMeeting.events.meetingStarted)
       end
    end
+
    if type(_internal.meetingState)=="table" then
       if not _internal.lastMeetingState or _internal.lastMeetingState.mic_open~=_internal.meetingState.mic_open then
-         emit(WatchForMeeting.micChange)
+         EventHandler:emit(WatchForMeeting.events.micChange)
          if _internal.meetingState.mic_open then
-            emit(WatchForMeeting.micOn)
+            EventHandler:emit(WatchForMeeting.events.micOn)
          else
-            emit(WatchForMeeting.micOff)
+            EventHandler:emit(WatchForMeeting.events.micOff)
          end
       end
+
       if not _internal.lastMeetingState or _internal.lastMeetingState.video_on~=_internal.meetingState.video_on then
-         emit(WatchForMeeting.videoChange)
+         EventHandler:emit(WatchForMeeting.events.videoChange)
          if _internal.meetingState.video_on then
-            emit(WatchForMeeting.videoOn)
+            EventHandler:emit(WatchForMeeting.events.videoOn)
          else
-            emit(WatchForMeeting.videoOff)
+            EventHandler:emit(WatchForMeeting.events.videoOff)
          end
       end
+
       if not _internal.lastMeetingState or _internal.lastMeetingState.sharing~=_internal.meetingState.sharing then
-         emit(WatchForMeeting.screensharingChange)
+         EventHandler:emit(WatchForMeeting.events.screensharingChange)
          if _internal.meetingState.sharing then
-            emit(WatchForMeeting.screensharingOn)
+            EventHandler:emit(WatchForMeeting.events.screensharingOn)
          else
-            emit(WatchForMeeting.screensharingOff)
+            EventHandler:emit(WatchForMeeting.events.screensharingOff)
          end
       end
    end
+
    _internal.lastMeetingState = _internal.meetingState
 end
+
 -------------------------------------------
 -- End Event Emitter
 -------------------------------------------
@@ -678,6 +684,7 @@ _internal.connectionAttempts = 0
 _internal.connectionError = false
 -- forward declare reconnectToSharing so onSharingMessage can reference it for reconnects
 local reconnectToSharing = function() end
+
 local function disconnectFromSharing()
    if(_internal.server) then
       if(getmetatable(_internal.server).stop) then _internal.server:stop() end
@@ -722,6 +729,7 @@ local function onSharingMessage(type, message)
       WatchForMeeting.logger.d("Sharing Websocket Callback "..type, message)
    end
 end
+
 local function connectToSharing()
    if(WatchForMeeting.sharing) then
       if(WatchForMeeting.sharing.useServer) then
@@ -740,6 +748,7 @@ local function connectToSharing()
       end
    end
 end
+
 --redefine reconnectToSharing now that connectToSharing & disconnectFromSharing exist.
 reconnectToSharing = function()
    if(WatchForMeeting.sharing.maxConnectionAttempts > 0 and _internal.connectionAttempts >= WatchForMeeting.sharing.maxConnectionAttempts) then
@@ -751,6 +760,7 @@ reconnectToSharing = function()
       hs.timer.doAfter(WatchForMeeting.sharing.waitBeforeRetry, connectToSharing)
    end
 end
+
 local function validateShareSettings()
    WatchForMeeting.logger.d("validateShareSettings")
    if(WatchForMeeting.sharing.useServer and (WatchForMeeting.sharing.serverURL==nil or WatchForMeeting.sharing.key==nil)) then
@@ -915,19 +925,10 @@ end
 --- Returns:
 ---  * The `spoon.WatchForMeeting` object for method chaining
 function WatchForMeeting:subscribe(event, fns)
-   if not events[event] then error('invalid event: '..event,3) end
-   if type(fns)=='function' then fns = {fns} end
-   if type(fns)~='table' then error('fn must be a function or table of functions',3) end
-   for _,fn in pairs(fns) do
-      if type(fn)~='function' then error('fn must be a function or table of functions',3) end
-      if not _internal.eventCallbacks[event] then _internal.eventCallbacks[event]={} end
-      if not _internal.eventCallbacks[event][fn] then
-      _internal.eventCallbacks[event][fn]=true
-      WatchForMeeting.logger.df('added callback for event %s',event)
-      end
-   end
+   EventHandler:subscribe(event, fns)
    return self
 end
+
 --- WatchForMeeting:unsubscribe(event, fn) -> hs.window.filter object
 --- Method
 --- Removes one or more event subscriptions
@@ -940,16 +941,10 @@ end
 ---  * The `spoon.WatchForMeeting` object for method chaining
 ---
 function WatchForMeeting:unsubscribe(event,fn)
-   if _internal.eventCallbacks[event] and _internal.eventCallbacks[event][fn] then
-      WatchForMeeting.logger.df('removed callback for event %s',event)
-      _internal.eventCallbacks[event][fn]=nil
-      if not next(_internal.eventCallbacks[event]) then
-         WatchForMeeting.logger.df('no more callbacks for event %s',event)
-         _internal.eventCallbacks[event]=nil
-      end
-   end
+   EventHandler:unsubscribe(event, fn)
    return self
 end
+
 --- WatchForMeeting:unsubscribeEvent(event) -> hs.window.filter object
 --- Method
 --- Removes all subscriptions from one event
@@ -961,11 +956,10 @@ end
 ---  * The `spoon.WatchForMeeting` object for method chaining
 ---
 function WatchForMeeting:unsubscribeEvent(event)
-   if not events[event] then error('invalid event: '..event,3) end
-   if _internal.eventCallbacks[event] then WatchForMeeting.logger.df('removed all callbacks for event %s',event) end
-   _internal.eventCallbacks[event]=nil
+   EventHandler:unsubscribeEvent(event)
    return self
  end
+
 -------------------------------------------
 -- End of Methods
 -------------------------------------------
