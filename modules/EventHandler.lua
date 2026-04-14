@@ -28,7 +28,7 @@ return function(acceptedEvents, objectName)
     end
 
     function EventHandler:emit(event)
-        EventHandler.logger.d('Emit '..eventNames[event])
+        EventHandler.logger.v('Emit '..eventNames[event])
         
         local fns=eventCallbacks[event]
         if fns then
