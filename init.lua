@@ -23,15 +23,35 @@
 ---
 --We'll store some stuff in an internal table
 local _internal = {}
+
 -- create a namespace
 local WatchForMeeting={}
-WatchForMeeting.__index = WatchForMeeting
 -- Metadata
 WatchForMeeting.name = "WatchForMeeting"
 WatchForMeeting.version = "3.0.0"
 WatchForMeeting.author = "Andrew Parnell <aparnell@gmail.com>"
 WatchForMeeting.homepage = "https://github.com/asp55/WatchForMeeting.spoon"
 WatchForMeeting.license = "MIT - https://opensource.org/licenses/MIT"
+
+
+
+--Monitors
+-------------------------------------------
+-- Zoom Monitor
+-------------------------------------------
+local ZoomMonitor = dofile(hs.spoons.resourcePath("modules/ZoomMonitor.lua"))
+-------------------------------------------
+-- End of Zoom Monitor
+-------------------------------------------
+
+-------------------------------------------
+-- Teams Monitor
+-------------------------------------------
+local TeamsMonitor = dofile(hs.spoons.resourcePath("modules/TeamsMonitor.lua"))
+TeamsMonitor.version = WatchForMeeting.version
+-------------------------------------------
+-- End of Teams Monitor
+-------------------------------------------
 
 
 -- Event callbacks
@@ -112,16 +132,35 @@ local EventHandler = dofile(hs.spoons.resourcePath("modules/EventHandler.lua"))(
 -------------------------------------------
 -- Declare Variables
 -------------------------------------------
+
+-- private variable to track if spoon is already running or not. (Makes it easier to find local variables)
+local running = false
+
+-------------------------------------------
+-- Special Variables 
+-- Stored in _internal or submodules and
+-- accessed through metamethods defined below
+-------------------------------------------
+
 --- WatchForMeeting.logger
 --- Variable
 --- hs.logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
-WatchForMeeting.logger = hs.logger.new('WatchMeeting')
--- private variable to track if spoon is already running or not. (Makes it easier to find local variables)
-_internal.running = false
+local log = hs.logger.new('WatchMeeting')
 
--------------------------------------------
--- Special Variables (stored in _internal and accessed through metamethods defined below)
--------------------------------------------
+local logSetter = function (_, key, value)
+   if(key=="level") then
+      print("Update all logger levels")
+      EventHandler.logger.level = value
+      TeamsMonitor.logger.level = value
+      ZoomMonitor.logger.level = value
+   end
+   log[key] = value
+end
+
+--Meta table for logger so it applies to submodules as well
+_internal.logger = setmetatable(log, { __newindex = logSetter })
+
+
 --- WatchForMeeting.sharing
 --- Variable
 --- A Table containing the settings that control sharing.
@@ -176,7 +215,7 @@ _internal.running = false
 ---   }
 --- ```
 ---
-_internal.sharingDefaults = {
+local sharingDefaults = {
    enabled = true,
    useServer = false,
    port = 8080,
@@ -185,7 +224,7 @@ _internal.sharingDefaults = {
    maxConnectionAttempts = -1,  --when less than 0, infinite retrys
    waitBeforeRetry = 5,
 }
-_internal.sharing = setmetatable({}, {__index=_internal.sharingDefaults})
+_internal.sharing = setmetatable({}, {__index=sharingDefaults})
 
 --- WatchForMeeting.menubar
 --- Variable
@@ -288,13 +327,13 @@ _internal.sharing = setmetatable({}, {__index=_internal.sharingDefaults})
 ---     </tr>
 ---   </tbody>
 --- </table>
-_internal.menubarDefaults = {
+local menubarDefaults = {
    enabled = true,
    color = true,
    detailed = true,
    showFullState = true
 }
-_internal.menubar__newIndex = function (_, key, value)
+local menubarSetter = function (_, key, value)
    if(key=="enabled") then
       if(value) then
          _internal.meetingMenuBar:returnToMenuBar()
@@ -306,7 +345,9 @@ _internal.menubar__newIndex = function (_, key, value)
       _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
    end
 end
-_internal.menubar = setmetatable({}, {__index=_internal.menubarDefaults, __newindex=_internal.menubar__newIndex})
+
+_internal.menubar = setmetatable({}, {__index=menubarDefaults, __newindex=menubarSetter})
+
 --- WatchForMeeting.mode
 --- Variable
 --- Number representing which mode WatchForMeeting should be running
@@ -316,6 +357,7 @@ _internal.menubar = setmetatable({}, {__index=_internal.menubarDefaults, __newin
 --- - *1* - Busy
 --- -- Fakes a meeting. (Marks as in meeting, and signals that the mic is live, camera is on, and screen is sharing.) Useful when meeting type is not supported.
 _internal.mode = 0
+
 --- WatchForMeeting.apps
 --- Variable
 --- A Table controlling which meeting apps are monitored in automatic mode.
@@ -326,12 +368,15 @@ _internal.mode = 0
 --- | teams | Monitor Microsoft Teams meetings via local WebSocket API | _false_ |
 ---
 --- Changes take effect on the next call to `:start()` or `:restart()`.
-_internal.appsDefaults = { zoom = true, teams = false }
-_internal.apps = setmetatable({}, {__index=_internal.appsDefaults})
+local appsDefaults = { zoom = true, teams = false }
+_internal.apps = setmetatable({}, {__index=appsDefaults})
+
+
 --- WatchForMeeting.zoom
 --- Variable
 --- (Read-only) The hs.application for zoom if it is running, otherwise nil
-_internal.zoom = nil
+-- Comes from ZoomMonitor.zoom
+
 --- WatchForMeeting.meetingState
 --- Variable
 --- (Read-only) Either false (when not in a meeting) or a table (when in a meeting)
@@ -342,15 +387,26 @@ _internal.zoom = nil
 --- | `{mic_open = [Boolean],  video_on = [Boolean], sharing = [Boolean] }`   | Busy         |
 _internal.meetingState = false
 _internal.lastMeetingState = nil;
+
+--- WatchForMeeting.meetingApp
+--- Variable
+--- (Read-only) string representing the name of the application providing the meeting state. Empty when not in a meeting.
+_internal.meetingApp = ""
+
 --- WatchForMeeting.faking
 --- Variable
 --- (Read-only) Boolean representing if the meeting is real or faked
+_internal.faking = false
+
+
 -- MetaMethods
 WatchForMeeting = setmetatable(WatchForMeeting, {
    --GET
    __index = function (table, key)
-      if(key=="zoom" or key=="meetingState" or key=="faking" or key=="menubar" or key=="mode" or key=="sharing" or key=="apps") then
+      if(key=="zoom" or key=="meetingState" or key=="meetingApp" or key=="faking" or key=="menubar" or key=="mode" or key=="sharing" or key=="apps" or key=="logger") then
          return _internal[key]
+      elseif(key=="zoom") then
+         return ZoomMonitor.zoom
       elseif(key=="events") then
          return EventHandler.events
       else
@@ -359,10 +415,10 @@ WatchForMeeting = setmetatable(WatchForMeeting, {
    end,
    --SET
    __newindex = function (table, key, value)
-      if(key=="zoom" or key=="meetingState" or key=="faking" or key=="events") then --luacheck: ignore 542
+      if(key=="zoom" or key=="meetingState" or key=="meetingApp" or key=="faking" or key=="events") then --luacheck: ignore 542
          --skip read-only fields
       elseif(key=="menubar") then
-         _internal.menubar = setmetatable(value, {__index=_internal.menubarDefaults, __newindex=_internal.menubar__newIndex})
+         _internal.menubar = setmetatable(value, {__index=menubarDefaults, __newindex=menubarSetter})
          if(_internal.menubar.enabled) then
             _internal.meetingMenuBar:returnToMenuBar()
             _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
@@ -375,15 +431,23 @@ WatchForMeeting = setmetatable(WatchForMeeting, {
          else
             table:auto()
          end
+      elseif(key=="logger") then
+         log = value
+         _internal.logger = setmetatable(value, { __newindex = logSetter })
       elseif(key=="sharing") then
-         _internal.sharing = setmetatable(value, {__index=_internal.sharingDefaults})
+         _internal.sharing = setmetatable(value, {__index=sharingDefaults})
       elseif(key=="apps") then
-         _internal.apps = setmetatable(value, {__index=_internal.appsDefaults})
+         _internal.apps = setmetatable(value, {__index=appsDefaults})
       else
          return rawset(table, key, value)
       end
    end
 })
+
+-------------------------------------------
+-- End Special Variables 
+-------------------------------------------
+
 -------------------------------------------
 -- End of Declare Variables
 -------------------------------------------
@@ -455,57 +519,46 @@ local function updateCallbacks()
    if(_internal.server and _internal.websocketStatus == "open") then _internal.server:send(composeJsonUpdate(_internal.meetingState)) end
    
    -- Emit appropriate events
-   if type(_internal.meetingState)~=type(_internal.lastMeetingState) then
-      EventHandler:emit(WatchForMeeting.events.meetingChange)
-      if _internal.meetingState==false then
-         if type(_internal.lastMeetingState)=="table" then
-            EventHandler:emit(WatchForMeeting.events.micChange)
-            EventHandler:emit(WatchForMeeting.events.videoChange)
-            EventHandler:emit(WatchForMeeting.events.screensharingChange)
-            if _internal.lastMeetingState.mic_open then
-               EventHandler:emit(WatchForMeeting.events.micOff)
-            end
-            if _internal.lastMeetingState.video_on then
-               EventHandler:emit(WatchForMeeting.events.videoOff)
-            end
-            if _internal.lastMeetingState.sharing then
-               EventHandler:emit(WatchForMeeting.events.screensharingOff)
-            end
-         end
+   local newState = _internal.meetingState or {}
+   local oldState = _internal.lastMeetingState or {}
 
-         EventHandler:emit(WatchForMeeting.events.meetingStopped)
+   if _internal.meetingState and not _internal.lastMeetingState then
+      -- Meeting just started
+      EventHandler:emit(WatchForMeeting.events.meetingStarted)
+   end
+
+
+   if oldState.mic_open~=newState.mic_open then
+      EventHandler:emit(WatchForMeeting.events.micChange)
+      if newState.mic_open then
+         EventHandler:emit(WatchForMeeting.events.micOn)
       else
-         EventHandler:emit(WatchForMeeting.events.meetingStarted)
+         EventHandler:emit(WatchForMeeting.events.micOff)
       end
    end
 
-   if type(_internal.meetingState)=="table" then
-      if not _internal.lastMeetingState or _internal.lastMeetingState.mic_open~=_internal.meetingState.mic_open then
-         EventHandler:emit(WatchForMeeting.events.micChange)
-         if _internal.meetingState.mic_open then
-            EventHandler:emit(WatchForMeeting.events.micOn)
-         else
-            EventHandler:emit(WatchForMeeting.events.micOff)
-         end
+   if oldState.video_on~=newState.video_on then
+      EventHandler:emit(WatchForMeeting.events.videoChange)
+      if newState.video_on then
+         EventHandler:emit(WatchForMeeting.events.videoOn)
+      else
+         EventHandler:emit(WatchForMeeting.events.videoOff)
       end
+   end
 
-      if not _internal.lastMeetingState or _internal.lastMeetingState.video_on~=_internal.meetingState.video_on then
-         EventHandler:emit(WatchForMeeting.events.videoChange)
-         if _internal.meetingState.video_on then
-            EventHandler:emit(WatchForMeeting.events.videoOn)
-         else
-            EventHandler:emit(WatchForMeeting.events.videoOff)
-         end
+   if oldState.sharing~=newState.sharing then
+      EventHandler:emit(WatchForMeeting.events.screensharingChange)
+      if newState.sharing then
+         EventHandler:emit(WatchForMeeting.events.screensharingOn)
+      else
+         EventHandler:emit(WatchForMeeting.events.screensharingOff)
       end
+   end
 
-      if not _internal.lastMeetingState or _internal.lastMeetingState.sharing~=_internal.meetingState.sharing then
-         EventHandler:emit(WatchForMeeting.events.screensharingChange)
-         if _internal.meetingState.sharing then
-            EventHandler:emit(WatchForMeeting.events.screensharingOn)
-         else
-            EventHandler:emit(WatchForMeeting.events.screensharingOff)
-         end
-      end
+
+   if not _internal.meetingState and _internal.lastMeetingState then
+      -- Meeting just started
+      EventHandler:emit(WatchForMeeting.events.meetingStopped)
    end
 
    _internal.lastMeetingState = _internal.meetingState
@@ -514,172 +567,8 @@ end
 -------------------------------------------
 -- End Event Emitter
 -------------------------------------------
--------------------------------------------
--- Zoom Monitor
--------------------------------------------
-_internal.zoomInMeeting = false
-local function currentlyInMeeting()
-   --If zoom is running and the second menu in zoom's menu bar is "Meeting" then we're in a meeting
-   local inMeetingState = (_internal.zoom ~= nil and _internal.zoom:getMenuItems()[2].AXTitle == "Meeting")
-   return inMeetingState
-end
---declare startStopWatchMeeting before watchMeeting, define it after.
-local startStopWatchMeeting = function() end
-local watchMeeting = hs.timer.new(0.5, function()
-    if(currentlyInMeeting() == false) then
-      _internal.updateMenuIcon(false)
-      -- No longer in a meeting, stop watching the meeting
-      startStopWatchMeeting()
-      updateCallbacks()
-      return
-    else
-      _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
-      --Watch for zoom menu items
-      local _mic_open = _internal.zoom:findMenuItem({"Meeting", "Unmute audio"})==nil
-      local _video_on = _internal.zoom:findMenuItem({"Meeting", "Start video"})==nil
-      local _sharing = _internal.zoom:findMenuItem({"Meeting", "Start share"})==nil
-      if((_internal.meetingState.mic_open ~= _mic_open) or (_internal.meetingState.video_on ~= _video_on) or (_internal.meetingState.sharing ~= _sharing)) then
-         _internal.meetingState = {mic_open = _mic_open, video_on = _video_on, sharing = _sharing}
-         WatchForMeeting.logger.d("In Meeting: ", (_internal.meetingState and true)," Open Mic: ",_internal.meetingState.mic_open," Video-ing:",_internal.meetingState.video_on," Sharing",_internal.meetingState.sharing)
-         updateCallbacks()
-      end
-   end
-end)
-startStopWatchMeeting = function()
-   if(not _internal.faking) then
-      if(_internal.meetingState == false and currentlyInMeeting() == true) then
-         _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
-         WatchForMeeting.logger.d("Start Meeting")
-            _internal.meetingState = {}
-            watchMeeting:start()
-            watchMeeting:fire()
-      elseif(_internal.meetingState and currentlyInMeeting() == false) then
-         _internal.updateMenuIcon(false)
-         WatchForMeeting.logger.d("End Meeting")
-         watchMeeting:stop()
-         _internal.meetingState = false
-         updateCallbacks()
-      end
-   else
-      --If we're faking the meeting we don't need watchMeeting to be regularly checking the status of the meeting elements
-      watchMeeting:stop()
-   end
-end
-local function checkMeetingStatus(window, name, event)
-	WatchForMeeting.logger.d("Check Meeting Status",window,name,event)
-   _internal.zoom = window:application()
-   startStopWatchMeeting()
-end
--- Monitor zoom for running meeting
-hs.application.enableSpotlightForNameSearches(true)
-_internal.zoomWindowFilter = hs.window.filter.new(false,"ZoomWindowFilterLog",0):setAppFilter('zoom.us')
-_internal.zoomWindowFilter:subscribe(hs.window.filter.hasWindow,checkMeetingStatus,true)
-_internal.zoomWindowFilter:subscribe(hs.window.filter.hasNoWindows,checkMeetingStatus)
-_internal.zoomWindowFilter:subscribe(hs.window.filter.windowDestroyed,checkMeetingStatus)
-_internal.zoomWindowFilter:subscribe(hs.window.filter.windowTitleChanged,checkMeetingStatus)
-_internal.zoomWindowFilter:pause()
--------------------------------------------
--- End of Zoom Monitor
--------------------------------------------
--------------------------------------------
--- Teams Monitor
--------------------------------------------
-_internal.teamsInMeeting = false
-_internal.teamsWebsocket = nil
-_internal.teamsConnectionId = 0
-local function disconnectFromTeams()
-   if _internal.teamsWebsocket then
-      _internal.teamsWebsocket:close()
-      _internal.teamsWebsocket = nil
-   end
-end
--- forward declare connectToTeams so onTeamsMessage can reference it for reconnects
-local connectToTeams = function() end
-local function onTeamsMessage(wsType, message)
-   WatchForMeeting.logger.d("Teams WebSocket "..wsType, message)
-   if wsType == "open" then
-      WatchForMeeting.logger.d("Connected to Teams local API")
-   elseif wsType == "received" then
-      local ok, parsed = pcall(hs.json.decode, message)
-      if not ok then
-         WatchForMeeting.logger.w("Failed to parse Teams message: "..message)
-         return
-      end
-      if parsed.tokenRefresh then
-         WatchForMeeting.logger.d("Teams token refreshed")
-         hs.settings.set("WatchForMeeting.teamsToken", parsed.tokenRefresh)
-      end
-      if parsed.meetingUpdate and parsed.meetingUpdate.meetingPermissions and parsed.meetingUpdate.meetingPermissions.canPair and not _internal.teamsPairing then
-         WatchForMeeting.logger.d("Sending pairing request")
-         _internal.teamsPairing = true
-         _internal.teamsWebsocket:send('{"action":"toggle-mute","parameters":{},"requestId":1}')
-      end
-      if parsed.response and parsed.response == "Pairing response resulted in no action" then
-         WatchForMeeting.logger.d("Didn't pair. Will try again next meeting.")
-         _internal.teamsPairing = false
-      end
-      if parsed.meetingUpdate and parsed.meetingUpdate.meetingState and not _internal.faking then
-         local ms = parsed.meetingUpdate.meetingState
-         if ms.isInMeeting then
-            local newState = {
-               mic_open = not ms.isMuted,
-               video_on = ms.isVideoOn,
-               sharing = ms.isSharing
-            }
-            if (not _internal.teamsInMeeting) or
-               (_internal.meetingState.mic_open ~= newState.mic_open) or
-               (_internal.meetingState.video_on ~= newState.video_on) or
-               (_internal.meetingState.sharing ~= newState.sharing) then
-               _internal.teamsInMeeting = true
-               _internal.meetingState = newState
-               _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
-               updateCallbacks()
-            end
-         else
-            if _internal.teamsInMeeting then
-               _internal.teamsInMeeting = false
-               _internal.meetingState = false
-               _internal.updateMenuIcon(false)
-               updateCallbacks()
-            end
-         end
-      end
-   elseif wsType == "closed" then
-      _internal.teamsWebsocket = nil
-      _internal.teamsPairing = false
-      if _internal.running and WatchForMeeting.apps.teams then
-         WatchForMeeting.logger.d("Teams WebSocket closed, probably because this app was blocked from the Third-party app API in teams.")
-         WatchForMeeting.logger.d("Go to Settings > Privacy > Third-party app API > Manage API and remove the application from block.")
-      end
-   elseif wsType == "fail" then
-      _internal.teamsWebsocket = nil
-      if _internal.running and WatchForMeeting.apps.teams then
-         WatchForMeeting.logger.d("Teams not available, retrying in 30 seconds")
-         hs.timer.doAfter(30, connectToTeams)
-      end
-   end
-end
-connectToTeams = function()
-   -- Increment the connection ID before closing, so any callbacks from the
-   -- previous connection are ignored even if close() fires synchronously.
-   _internal.teamsConnectionId = _internal.teamsConnectionId + 1
-   local myId = _internal.teamsConnectionId
-   if _internal.teamsWebsocket then
-      _internal.teamsWebsocket:close()
-      _internal.teamsWebsocket = nil
-   end
-   local token = hs.settings.get("WatchForMeeting.teamsToken") or ""
-   local url = "ws://localhost:8124?token="..token.."&protocol-version=2.0.0&manufacturer=Hammerspoon&device=WatchForMeeting&app=WatchForMeeting&app-version="..WatchForMeeting.version
-   WatchForMeeting.logger.d("Connecting to Teams")
-   _internal.teamsWebsocket = hs.websocket.new(url, function(wsType, message)
-      if myId == _internal.teamsConnectionId then
-         onTeamsMessage(wsType, message)
-      end
-   end)
-end
--------------------------------------------
--- End of Teams Monitor
--------------------------------------------
+
+
 _internal.connectionAttempts = 0
 _internal.connectionError = false
 -- forward declare reconnectToSharing so onSharingMessage can reference it for reconnects
@@ -697,20 +586,20 @@ local function onSharingMessage(type, message)
       _internal.connectionAttempts = 0
       local draft = {action="identify", key=WatchForMeeting.sharing.key, type="room", status={inMeeting=_internal.meetingState}}
       _internal.server:send(hs.json.encode(draft))
-   elseif(type == "closed" and _internal.running) then
+   elseif(type == "closed" and running) then
       _internal.websocketStatus = "closed"
       if(_internal.connectionError) then
-         WatchForMeeting.logger.d("Lost connection to sharing websocket, will not reattempt due to error")
+         log.d("Lost connection to sharing websocket, will not reattempt due to error")
       else
-         WatchForMeeting.logger.d("Lost connection to sharing websocket, attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds")
+         log.d("Lost connection to sharing websocket, attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds")
          reconnectToSharing()
       end
    elseif(type == "fail") then
       _internal.websocketStatus = "fail"
       if(WatchForMeeting.sharing.maxConnectionAttempts > 0) then
-         WatchForMeeting.logger.d("Could not connect to sharing websocket server. attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds. (Attempt ".._internal.connectionAttempts.."/"..WatchForMeeting.sharing.maxConnectionAttempts..")")
+         log.d("Could not connect to sharing websocket server. attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds. (Attempt ".._internal.connectionAttempts.."/"..WatchForMeeting.sharing.maxConnectionAttempts..")")
       else
-         WatchForMeeting.logger.d("Could not connect to sharing websocket server. attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds. (Attempt ".._internal.connectionAttempts..")")
+         log.d("Could not connect to sharing websocket server. attempting to reconnect in "..WatchForMeeting.sharing.waitBeforeRetry.." seconds. (Attempt ".._internal.connectionAttempts..")")
       end
       reconnectToSharing()
    elseif(type == "received") then
@@ -720,25 +609,25 @@ local function onSharingMessage(type, message)
          if(parsed.errorType == "badkey") then
             disconnectFromSharing()
             hs.showError("")
-            WatchForMeeting.logger.e("WatchForMeeting.sharing.key not valid. Make sure that key has been established on the server.")
+            log.e("WatchForMeeting.sharing.key not valid. Make sure that key has been established on the server.")
          end
       else
-         WatchForMeeting.logger.d("Sharing Websocket Message received: ", hs.inspect.inspect(parsed));
+         log.d("Sharing Websocket Message received: ", hs.inspect.inspect(parsed));
       end
    else
-      WatchForMeeting.logger.d("Sharing Websocket Callback "..type, message)
+      log.d("Sharing Websocket Callback "..type, message)
    end
 end
 
 local function connectToSharing()
    if(WatchForMeeting.sharing) then
       if(WatchForMeeting.sharing.useServer) then
-         WatchForMeeting.logger.d("Connecting to server at "..WatchForMeeting.sharing.serverURL)
+         log.d("Connecting to server at "..WatchForMeeting.sharing.serverURL)
          _internal.connectionAttempts = _internal.connectionAttempts + 1
          _internal.websocketStatus = "connecting"
          _internal.server = hs.websocket.new(WatchForMeeting.sharing.serverURL, onSharingMessage);
       else
-         WatchForMeeting.logger.d("Starting Self Hosted Server on port "..WatchForMeeting.sharing.port)
+         log.d("Starting Self Hosted Server on port "..WatchForMeeting.sharing.port)
          _internal.server = hs.httpserver.new()
          _internal.server:websocket("/ws", selfhostWebsocketCallback)
          _internal.websocketStatus = "open"
@@ -752,7 +641,7 @@ end
 --redefine reconnectToSharing now that connectToSharing & disconnectFromSharing exist.
 reconnectToSharing = function()
    if(WatchForMeeting.sharing.maxConnectionAttempts > 0 and _internal.connectionAttempts >= WatchForMeeting.sharing.maxConnectionAttempts) then
-      WatchForMeeting.logger.e("Maximum Connection Attempts failed")
+      log.e("Maximum Connection Attempts failed")
       disconnectFromSharing()
    elseif(_internal.connectionError) then
       disconnectFromSharing()
@@ -762,23 +651,45 @@ reconnectToSharing = function()
 end
 
 local function validateShareSettings()
-   WatchForMeeting.logger.d("validateShareSettings")
+   log.d("validateShareSettings")
    if(WatchForMeeting.sharing.useServer and (WatchForMeeting.sharing.serverURL==nil or WatchForMeeting.sharing.key==nil)) then
       hs.showError("")
-      if(WatchForMeeting.sharing.serverURL==nil) then WatchForMeeting.logger.e("WatchForMeeting.sharing.serverURL required when using a server") end
-      if(WatchForMeeting.sharing.key==nil) then WatchForMeeting.logger.e("WatchForMeeting.sharing.key required when using a server") end
+      if(WatchForMeeting.sharing.serverURL==nil) then log.e("WatchForMeeting.sharing.serverURL required when using a server") end
+      if(WatchForMeeting.sharing.key==nil) then log.e("WatchForMeeting.sharing.key required when using a server") end
       return false
    elseif(not WatchForMeeting.sharing.useServer and WatchForMeeting.sharing.port==nil) then
       hs.showError("")
-      WatchForMeeting.logger.e("WatchForMeeting.sharing.port required when self hosting")
+      log.e("WatchForMeeting.sharing.port required when self hosting")
       return false
    else
       return true
    end
 end
+
 -------------------------------------------
 -- Methods
 -------------------------------------------
+
+
+local function startMonitors()
+   log.d("startMonitors")
+   if(WatchForMeeting.apps.zoom) then
+      ZoomMonitor:start()
+   end
+
+   if(WatchForMeeting.apps.teams) then
+      TeamsMonitor:start()
+   end
+end
+
+local function stopMonitors(except)
+   log.d("stopMonitors("..(function() if(except) then return except.name else return "" end end)()..")")
+   local monitors = {TeamsMonitor, ZoomMonitor}
+   for _,v in pairs(monitors) do
+      if v ~= except then v:stop() end
+   end
+end
+
 --- WatchForMeeting:start() -> WatchForMeeting
 --- Method
 --- Starts a WatchForMeeting object
@@ -789,14 +700,18 @@ end
 --- Returns:
 ---  * The spoon.WatchForMeeting object
 function WatchForMeeting:start()
-   if(not _internal.running) then
-      _internal.running = true
+   log.d("WatchForMeeting:start()")
+
+   if(not running) then
+      running = true
       if(self.sharing.enabled and validateShareSettings()) then
          connectToSharing()
       end
+
       if(self.menubar.enabled) then
          _internal.meetingMenuBar:returnToMenuBar()
       end
+
       if(_internal.mode == 1 ) then
          self:fake()
       else
@@ -815,12 +730,13 @@ end
 --- Returns:
 ---  * The spoon.WatchForMeeting object
 function WatchForMeeting:stop()
-   _internal.running = false
+   log.d("WatchForMeeting:stop()")
+   running = false
    disconnectFromSharing()
    _internal.lastMeetingState = nil
    _internal.meetingMenuBar:removeFromMenuBar()
-   _internal.zoomWindowFilter:pause()
-   disconnectFromTeams()
+
+   stopMonitors()
    return self
 end
 --- WatchForMeeting:restart()
@@ -836,9 +752,40 @@ function WatchForMeeting:restart()
    self:stop()
    return self:start()
 end
+
+local function HandleAppChange(appMonitor)
+   log.d("HandleAppChange("..appMonitor.name..")")
+
+   if appMonitor.meetingState then
+      stopMonitors(appMonitor)
+      _internal.meetingApp = appMonitor.appName
+   end
+
+   _internal.meetingState = appMonitor.meetingState
+
+   _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
+   updateCallbacks()
+   
+   if not appMonitor.meetingState then
+      _internal.meetingApp = ""
+      startMonitors()
+   end
+end
+
+local function HandleZoomChange()
+   HandleAppChange(ZoomMonitor)
+end
+
+local function HandleTeamsChange()
+   HandleAppChange(TeamsMonitor)
+end
+
+ZoomMonitor:subscribe(ZoomMonitor.events.meetingChange, HandleZoomChange)
+TeamsMonitor:subscribe(TeamsMonitor.events.meetingChange, HandleTeamsChange)
+
 --- WatchForMeeting:auto()
 --- Method
---- Monitors Zoom and updates status accordingly
+--- Monitors meetings and updates status accordingly
 ---
 --- Parameters:
 ---  * None
@@ -847,13 +794,12 @@ end
 ---  * The spoon.WatchForMeeting object
 function WatchForMeeting:auto()
    _internal.mode = 0
-   if(_internal.running) then
+   if(running) then
       _internal.faking = false
       _internal.meetingState = false
-      _internal.teamsInMeeting = false
-      if(WatchForMeeting.apps.zoom) then
-         startStopWatchMeeting()
-      end
+
+      startMonitors()
+
       _internal.meetingMenuBar:setMenu({
          { title = "Meeting Status:", disabled = true },
          { title = "Automatic", checked = true  },
@@ -862,17 +808,15 @@ function WatchForMeeting:auto()
       --Update everything
       _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
       updateCallbacks()
-      if(WatchForMeeting.apps.zoom) then
-         _internal.zoomWindowFilter:resume()
-      else
-         _internal.zoomWindowFilter:pause()
-      end
-      if(WatchForMeeting.apps.teams and not _internal.teamsWebsocket) then
-         connectToTeams()
-      end
+
    end
    return self
 end
+
+
+
+
+
 --- WatchForMeeting:fake(mic_open, video_on, sharing)
 --- Method
 --- Disables monitoring and reports as being in a meeting. Useful when meeting type is not supported.
@@ -886,10 +830,13 @@ end
 ---  * The spoon.WatchForMeeting object
 function WatchForMeeting:fake(_mic_open, _video_on, _sharing)
    _internal.mode = 1
-   if(_internal.running) then
+   if(running) then
       _internal.faking = true
+      _internal.meetingApp = "fake"
       _internal.meetingState = {mic_open = _mic_open, video_on = _video_on, sharing = _sharing}
-      startStopWatchMeeting()
+
+      stopMonitors()
+
       local meetingMenu = {
          { title = "Meeting Status:", disabled = true },
          { title = "Automatic", checked = false, fn=function() WatchForMeeting:auto() end  },
@@ -908,12 +855,12 @@ function WatchForMeeting:fake(_mic_open, _video_on, _sharing)
          table.insert(meetingMenu, { title = "Clear", fn=function() WatchForMeeting:fake(false, false, false) end })
       end
       _internal.meetingMenuBar:setMenu(meetingMenu)
-      _internal.zoomWindowFilter:pause()
       updateCallbacks()
       _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
    end
    return self
 end
+
 --- WatchForMeeting:subscribe(event, fn)
 --- Method
 --- Subscribe to one event with one or more functions
@@ -963,4 +910,5 @@ function WatchForMeeting:unsubscribeEvent(event)
 -------------------------------------------
 -- End of Methods
 -------------------------------------------
+
 return WatchForMeeting

@@ -1,10 +1,8 @@
 return function(acceptedEvents, objectName)
 
-    local _internal = {
-        eventCallbacks = {},
-        events = {},
-        eventNames = {}
-    }
+    local eventCallbacks = {}
+    local events = {}
+    local eventNames = {}
 
     local EventHandler = {}
 
@@ -20,21 +18,19 @@ return function(acceptedEvents, objectName)
         EventHandler.logger.d('Create EventHandler')
     end
 
-    _internal.eventCallbacks = {}
-    _internal.events = {}
     for _,v in pairs(acceptedEvents) do
-        _internal.events[v]=v
+        events[v]=v
         if objectName then
-            _internal.eventNames[v] = objectName..'.'..v
+            eventNames[v] = objectName..'.'..v
         else
-            _internal.eventNames[v] = v
+            eventNames[v] = v
         end
     end
 
     function EventHandler:emit(event)
-        EventHandler.logger.d('Emit '.._internal.eventNames[event])
+        EventHandler.logger.d('Emit '..eventNames[event])
         
-        local fns=_internal.eventCallbacks[event]
+        local fns=eventCallbacks[event]
         if fns then
             for fn in pairs(fns) do fn() end
         end
@@ -55,23 +51,23 @@ return function(acceptedEvents, objectName)
 
     function EventHandler:subscribe(event, fns)
         if not event then error('invalid value for event ',3) end
-        if not _internal.events[event] then error('invalid event: '..event,3) end
+        if not events[event] then error('invalid event: '..event,3) end
         if type(fns)~='table' and type(fns)~='function'  then error('fn must be a function or table of functions',3) end
 
         if type(fns)=='function' then fns = {fns} end
         
         for _,fn in pairs(fns) do
             if type(fn)~='function' then error('fn must be a function or table of functions',3) end
-            if not _internal.eventCallbacks[event] then _internal.eventCallbacks[event]={} end
-            if not _internal.eventCallbacks[event][fn] then
-                _internal.eventCallbacks[event][fn]=true
-                EventHandler.logger.df('added callback for event %s', _internal.eventNames[event])
+            if not eventCallbacks[event] then eventCallbacks[event]={} end
+            if not eventCallbacks[event][fn] then
+                eventCallbacks[event][fn]=true
+                EventHandler.logger.df('added callback for event %s', eventNames[event])
             end
         end
         return self
     end
 
-    --- EventHandler:unsubscribe(event, fn) -> hs.window.filter object
+    --- EventHandler:unsubscribe(event, fn) -> EventHandler object
     --- Method
     --- Removes one or more event subscriptions
     ---
@@ -83,18 +79,18 @@ return function(acceptedEvents, objectName)
     ---  * The `EventHandler` object for method chaining
     ---
     function EventHandler:unsubscribe(event,fn)
-        if _internal.eventCallbacks[event] and _internal.eventCallbacks[event][fn] then
-            EventHandler.logger.df('removed callback for event %s', _internal.eventNames[event])
-            _internal.eventCallbacks[event][fn]=nil
-            if not next(_internal.eventCallbacks[event]) then
-                EventHandler.logger.df('no more callbacks for event %s', _internal.eventNames[event])
-                _internal.eventCallbacks[event]=nil
+        if eventCallbacks[event] and eventCallbacks[event][fn] then
+            EventHandler.logger.df('removed callback for event %s', eventNames[event])
+            eventCallbacks[event][fn]=nil
+            if not next(eventCallbacks[event]) then
+                EventHandler.logger.df('no more callbacks for event %s', eventNames[event])
+                eventCallbacks[event]=nil
             end
         end
         return self
     end
 
-    --- EventHandler:unsubscribeEvent(event) -> hs.window.filter object
+    --- EventHandler:unsubscribeEvent(event) -> EventHandler object
     --- Method
     --- Removes all subscriptions from one event
     ---
@@ -105,9 +101,22 @@ return function(acceptedEvents, objectName)
     ---  * The `EventHandler` object for method chaining
     ---
     function EventHandler:unsubscribeEvent(event)
-        if not _internal.events[event] then error('invalid event: '..event,3) end
-        if _internal.eventCallbacks[event] then EventHandler.logger.df('removed all callbacks for event %s', _internal.eventNames[event]) end
-        _internal.eventCallbacks[event]=nil
+        if not events[event] then error('invalid event: '..event,3) end
+        if eventCallbacks[event] then EventHandler.logger.df('removed all callbacks for event %s', eventNames[event]) end
+        eventCallbacks[event]=nil
+        return self
+    end
+
+    --- EventHandler:unsubscribeAll() -> EventHandler object
+    --- Method
+    --- Removes all subscriptions from one event
+    ---
+    --- Returns:
+    ---  * The `EventHandler` object for method chaining
+    ---
+    function EventHandler:unsubscribeAll()
+        EventHandler.logger.d('removed all event callbacks')
+        eventCallbacks={}
         return self
     end
 
@@ -116,7 +125,7 @@ return function(acceptedEvents, objectName)
         --GET
         __index = function (table, key)
             if(key=="events") then
-                return _internal.events
+                return events
             else
                 return rawget( table, key )
             end
