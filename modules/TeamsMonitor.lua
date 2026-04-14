@@ -13,6 +13,7 @@ TeamsMonitor.logger = hs.logger.new(TeamsMonitor.name, 5)
 
 
 
+---@type boolean | table
 local meetingState = false
 
 local teamsWebsocket = nil
@@ -133,7 +134,9 @@ local function onTeamsMessage(wsType, message)
 
             TeamsMonitor.logger.d("Sending pairing request")
             teamsPairing = true
-            teamsWebsocket:send('{"action":"toggle-mute","parameters":{},"requestId":1}')
+            if teamsWebsocket then 
+                teamsWebsocket:send('{"action":"toggle-mute","parameters":{},"requestId":1}')
+            end
         end
 
         if parsed.response and parsed.response == "Pairing response resulted in no action" then
@@ -244,7 +247,7 @@ TeamsMonitor = setmetatable(TeamsMonitor, {
         if key=="events" or key=="meetingState" then --luacheck: ignore 542
             -- skip writing events to EventHandler as it is a read-only field
         else
-            return rawset(table, key, value)
+            rawset(table, key, value)
         end
     end
 })

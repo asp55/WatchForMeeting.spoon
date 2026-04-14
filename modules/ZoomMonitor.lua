@@ -92,6 +92,8 @@ function ZoomMonitor:unsubscribeAll()
 -------------------------------------------
 
 local zoom = nil
+
+---@type boolean | table
 local meetingState = false
 
 
@@ -110,12 +112,12 @@ local checkMeetingStatus = hs.timer.new(0.5, function()
       startStopWatchMeeting()
       EventHandler:emit(EventHandler.events.meetingChange)
       return
-    else
+    elseif(zoom) then
       --Watch for zoom menu items
       local _mic_open = zoom:findMenuItem({"Meeting", "Unmute audio"})==nil
       local _video_on = zoom:findMenuItem({"Meeting", "Start video"})==nil
       local _sharing = zoom:findMenuItem({"Meeting", "Start share"})==nil
-      if((meetingState.mic_open ~= _mic_open) or (meetingState.video_on ~= _video_on) or (meetingState.sharing ~= _sharing)) then
+      if(not meetingState or (meetingState.mic_open ~= _mic_open) or (meetingState.video_on ~= _video_on) or (meetingState.sharing ~= _sharing)) then
         meetingState = {mic_open = _mic_open, video_on = _video_on, sharing = _sharing}
         ZoomMonitor.logger.d("In Meeting: ", (meetingState and true)," Open Mic: ",meetingState.mic_open," Video-ing:",meetingState.video_on," Sharing",meetingState.sharing)
         EventHandler:emit(EventHandler.events.meetingChange)
@@ -193,7 +195,7 @@ ZoomMonitor = setmetatable(ZoomMonitor, {
         if key=="events" or key=="meetingState" or "zoom" then --luacheck: ignore 542
             -- skip writing events to EventHandler as it is a read-only field
         else
-            return rawset(table, key, value)
+            rawset(table, key, value)
         end
     end
 })

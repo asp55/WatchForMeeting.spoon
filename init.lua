@@ -157,10 +157,6 @@ local logSetter = function (_, key, value)
    log[key] = value
 end
 
---Meta table for logger so it applies to submodules as well
-_internal.logger = setmetatable(log, { __newindex = logSetter })
-
-
 --- WatchForMeeting.sharing
 --- Variable
 --- A Table containing the settings that control sharing.
@@ -403,8 +399,10 @@ _internal.faking = false
 WatchForMeeting = setmetatable(WatchForMeeting, {
    --GET
    __index = function (table, key)
-      if(key=="zoom" or key=="meetingState" or key=="meetingApp" or key=="faking" or key=="menubar" or key=="mode" or key=="sharing" or key=="apps" or key=="logger") then
+      if(key=="zoom" or key=="meetingState" or key=="meetingApp" or key=="faking" or key=="menubar" or key=="mode" or key=="sharing" or key=="apps") then
          return _internal[key]
+      elseif(key=="logger") then
+         return setmetatable({}, {__index=log, __newindex = logSetter })
       elseif(key=="zoom") then
          return ZoomMonitor.zoom
       elseif(key=="events") then
@@ -433,13 +431,12 @@ WatchForMeeting = setmetatable(WatchForMeeting, {
          end
       elseif(key=="logger") then
          log = value
-         _internal.logger = setmetatable(value, { __newindex = logSetter })
       elseif(key=="sharing") then
          _internal.sharing = setmetatable(value, {__index=sharingDefaults})
       elseif(key=="apps") then
          _internal.apps = setmetatable(value, {__index=appsDefaults})
       else
-         return rawset(table, key, value)
+         rawset(table, key, value)
       end
    end
 })
@@ -496,9 +493,13 @@ local function composeJsonUpdate(meetingState)
    local message = {action="update", inMeeting=meetingState}
    return hs.json.encode(message)
 end
+
 local monitorfile = io.open(hs.spoons.resourcePath("monitor.html"), "r")
-local htmlContent = monitorfile:read("*a")
-monitorfile:close()
+local htmlContent = ""
+if(monitorfile ~= nil) then
+   htmlContent = monitorfile:read("*a")
+   monitorfile:close()
+end
 local function selfhostHttpCallback()
    local websocketPath = "ws://"..hs.network.interfaceDetails(hs.network.primaryInterfaces())["IPv4"]["Addresses"][1]..":"..WatchForMeeting.sharing.port.."/ws"
    htmlContent = string.gsub(htmlContent,"%%websocketpath%%",websocketPath)

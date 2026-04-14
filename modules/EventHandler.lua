@@ -135,7 +135,7 @@ return function(acceptedEvents, objectName)
             if(key=="events") then --luacheck: ignore 542
                 -- skip writing events to EventHandler as it is a read-only field
             else
-                return rawset(table, key, value)
+                rawset(table, key, value)
             end
         end
     })
