@@ -28,7 +28,7 @@ local _internal = {}
 local WatchForMeeting={}
 -- Metadata
 WatchForMeeting.name = "WatchForMeeting"
-WatchForMeeting.version = "3.0.0"
+WatchForMeeting.version = "4.0.0"
 WatchForMeeting.author = "Andrew Parnell <aparnell@gmail.com>"
 WatchForMeeting.homepage = "https://github.com/asp55/WatchForMeeting.spoon"
 WatchForMeeting.license = "MIT - https://opensource.org/licenses/MIT"
