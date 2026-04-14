@@ -323,6 +323,9 @@ _internal.sharing = setmetatable({}, {__index=sharingDefaults})
 ---     </tr>
 ---   </tbody>
 --- </table>
+--- 
+local menuBar = hs.menubar.new(false)
+
 local menubarDefaults = {
    enabled = true,
    color = true,
@@ -331,18 +334,20 @@ local menubarDefaults = {
 }
 local menubarSetter = function (_, key, value)
    if(key=="enabled") then
-      if(value) then
-         _internal.meetingMenuBar:returnToMenuBar()
-         _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
-      else
-         _internal.meetingMenuBar:removeFromMenuBar()
+      if(menuBar) then
+         if(value) then
+            menuBar:returnToMenuBar()
+            _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
+         else
+            menuBar:removeFromMenuBar()
+         end
       end
    else
       _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
    end
 end
 
-_internal.menubar = setmetatable({}, {__index=menubarDefaults, __newindex=menubarSetter})
+local menubarSettings = setmetatable({}, {__index=menubarDefaults, __newindex=menubarSetter})
 
 --- WatchForMeeting.mode
 --- Variable
@@ -399,8 +404,10 @@ _internal.faking = false
 WatchForMeeting = setmetatable(WatchForMeeting, {
    --GET
    __index = function (table, key)
-      if(key=="zoom" or key=="meetingState" or key=="meetingApp" or key=="faking" or key=="menubar" or key=="mode" or key=="sharing" or key=="apps") then
+      if(key=="zoom" or key=="meetingState" or key=="meetingApp" or key=="faking" or key=="mode" or key=="sharing" or key=="apps") then
          return _internal[key]
+      elseif(key=="menubar")then
+         return menubarSettings
       elseif(key=="logger") then
          return setmetatable({}, {__index=log, __newindex = logSetter })
       elseif(key=="zoom") then
@@ -416,13 +423,8 @@ WatchForMeeting = setmetatable(WatchForMeeting, {
       if(key=="zoom" or key=="meetingState" or key=="meetingApp" or key=="faking" or key=="events") then --luacheck: ignore 542
          --skip read-only fields
       elseif(key=="menubar") then
-         _internal.menubar = setmetatable(value, {__index=menubarDefaults, __newindex=menubarSetter})
-         if(_internal.menubar.enabled) then
-            _internal.meetingMenuBar:returnToMenuBar()
-            _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
-         else
-            _internal.meetingMenuBar:removeFromMenuBar()
-         end
+         menubarSettings = setmetatable({}, {__index=setmetatable(value, {__index=menubarDefaults}), __newindex=menubarSetter})
+         menubarSettings.enabled = menubarSettings.enabled
       elseif(key=="mode") then
          if(value == 1) then
             table:fake()
@@ -448,19 +450,19 @@ WatchForMeeting = setmetatable(WatchForMeeting, {
 -------------------------------------------
 -- End of Declare Variables
 -------------------------------------------
+
 -------------------------------------------
 -- Menu Bar
 -------------------------------------------
-_internal.meetingMenuBar = hs.menubar.new(false)
 function _internal.updateMenuIcon(status, faking)
-   if(_internal.menubar.enabled) then
+   if(menubarSettings.enabled) then
       local iconPath = 'menubar-icons/'
-      if(_internal.menubar.color) then
+      if(menubarSettings.color) then
          iconPath = iconPath..'Color/'
       else
          iconPath = iconPath..'Template/'
       end
-      if(_internal.menubar.detailed) then
+      if(menubarSettings.detailed) then
          iconPath = iconPath..'Detailed/'
       else
          iconPath = iconPath..'Minimal/'
@@ -468,7 +470,7 @@ function _internal.updateMenuIcon(status, faking)
       local iconFile = "Free.pdf"
       if(status) then
          iconFile = "Meeting"
-         if(_internal.menubar.showFullState and (status.mic_open or status.video_on or status.sharing)) then
+         if(menubarSettings.showFullState and (status.mic_open or status.video_on or status.sharing)) then
             if(status.mic_open) then iconFile = iconFile.."-Mic" end
             if(status.video_on) then iconFile = iconFile.."-Vid" end
             if(status.sharing) then iconFile = iconFile.."-Screen" end
@@ -476,7 +478,9 @@ function _internal.updateMenuIcon(status, faking)
          if(faking) then iconFile = iconFile.."-Faking" end
          iconFile = iconFile..".pdf"
       end
-      _internal.meetingMenuBar:setIcon(hs.spoons.resourcePath(iconPath..iconFile),not _internal.menubar.color)
+      if menuBar then
+         menuBar:setIcon(hs.spoons.resourcePath(iconPath..iconFile),not menubarSettings.color)
+      end
    end
 end
 -------------------------------------------
@@ -523,43 +527,54 @@ local function updateCallbacks()
    local newState = _internal.meetingState or {}
    local oldState = _internal.lastMeetingState or {}
 
+   local eventQueue = {}
+
    if _internal.meetingState and not _internal.lastMeetingState then
       -- Meeting just started
-      EventHandler:emit(WatchForMeeting.events.meetingStarted)
+      table.insert(eventQueue, WatchForMeeting.events.meetingStarted)
    end
 
 
    if oldState.mic_open~=newState.mic_open then
-      EventHandler:emit(WatchForMeeting.events.micChange)
+      table.insert(eventQueue, WatchForMeeting.events.micChange)
       if newState.mic_open then
-         EventHandler:emit(WatchForMeeting.events.micOn)
+         table.insert(eventQueue, WatchForMeeting.events.micOn)
       else
-         EventHandler:emit(WatchForMeeting.events.micOff)
+         table.insert(eventQueue, WatchForMeeting.events.micOff)
       end
    end
 
    if oldState.video_on~=newState.video_on then
-      EventHandler:emit(WatchForMeeting.events.videoChange)
+      table.insert(eventQueue, WatchForMeeting.events.videoChange)
       if newState.video_on then
-         EventHandler:emit(WatchForMeeting.events.videoOn)
+         table.insert(eventQueue, WatchForMeeting.events.videoOn)
       else
-         EventHandler:emit(WatchForMeeting.events.videoOff)
+         table.insert(eventQueue, WatchForMeeting.events.videoOff)
       end
    end
 
    if oldState.sharing~=newState.sharing then
-      EventHandler:emit(WatchForMeeting.events.screensharingChange)
+      table.insert(eventQueue, WatchForMeeting.events.screensharingChange)
       if newState.sharing then
-         EventHandler:emit(WatchForMeeting.events.screensharingOn)
+         table.insert(eventQueue, WatchForMeeting.events.screensharingOn)
       else
-         EventHandler:emit(WatchForMeeting.events.screensharingOff)
+         table.insert(eventQueue, WatchForMeeting.events.screensharingOff)
       end
    end
 
 
    if not _internal.meetingState and _internal.lastMeetingState then
-      -- Meeting just started
-      EventHandler:emit(WatchForMeeting.events.meetingStopped)
+      -- Meeting just ended
+      table.insert(eventQueue, WatchForMeeting.events.meetingStopped)
+   end
+
+
+   if #eventQueue > 0 then
+      EventHandler:emit(WatchForMeeting.events.meetingChange)
+   
+      for _, e in pairs(eventQueue) do
+         EventHandler:emit(e)
+      end
    end
 
    _internal.lastMeetingState = _internal.meetingState
@@ -709,8 +724,8 @@ function WatchForMeeting:start()
          connectToSharing()
       end
 
-      if(self.menubar.enabled) then
-         _internal.meetingMenuBar:returnToMenuBar()
+      if(menuBar and self.menubar.enabled) then
+         menuBar:returnToMenuBar()
       end
 
       if(_internal.mode == 1 ) then
@@ -735,7 +750,9 @@ function WatchForMeeting:stop()
    running = false
    disconnectFromSharing()
    _internal.lastMeetingState = nil
-   _internal.meetingMenuBar:removeFromMenuBar()
+   if menuBar then
+      menuBar:removeFromMenuBar()
+   end
 
    stopMonitors()
    return self
@@ -801,11 +818,13 @@ function WatchForMeeting:auto()
 
       startMonitors()
 
-      _internal.meetingMenuBar:setMenu({
-         { title = "Meeting Status:", disabled = true },
-         { title = "Automatic", checked = true  },
-         { title = "Busy", checked = false, fn=function() WatchForMeeting:fake() end }
-      })
+      if menuBar then
+         menuBar:setMenu({
+            { title = "Meeting Status:", disabled = true },
+            { title = "Automatic", checked = true  },
+            { title = "Busy", checked = false, fn=function() WatchForMeeting:fake() end }
+         })
+      end
       --Update everything
       _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
       updateCallbacks()
@@ -855,7 +874,10 @@ function WatchForMeeting:fake(_mic_open, _video_on, _sharing)
       if(_mic_open or _video_on or _sharing) then
          table.insert(meetingMenu, { title = "Clear", fn=function() WatchForMeeting:fake(false, false, false) end })
       end
-      _internal.meetingMenuBar:setMenu(meetingMenu)
+      
+      if menuBar then
+         menuBar:setMenu(meetingMenu)
+      end
       updateCallbacks()
       _internal.updateMenuIcon(_internal.meetingState, _internal.faking)
    end
