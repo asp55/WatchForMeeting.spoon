@@ -135,7 +135,7 @@ local function onTeamsMessage(wsType, message)
             TeamsMonitor.logger.d("Sending pairing request")
             teamsPairing = true
             if teamsWebsocket then 
-                teamsWebsocket:send('{"action":"toggle-mute","parameters":{},"requestId":1}')
+                teamsWebsocket:send('{"action":"pair","parameters":{},"requestId":1}')
             end
         end
 
