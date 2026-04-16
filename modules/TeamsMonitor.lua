@@ -111,6 +111,7 @@ end
 
 -- forward declare connectToTeams so onTeamsMessage can reference it for reconnects
 local connectToTeams = function() end
+local closedCount = 0
 
 local function onTeamsMessage(wsType, message)
     TeamsMonitor.logger.v("onTeamsMessage("..wsType, message,")")
@@ -140,7 +141,7 @@ local function onTeamsMessage(wsType, message)
         end
 
         if parsed.response and parsed.response == "Pairing response resulted in no action" then
-            TeamsMonitor.logger.d("Didn't pair. Will try again next meeting.")
+            TeamsMonitor.logger.i("Didn't pair. Will try again next meeting.")
             teamsPairing = false
         end
 
@@ -173,13 +174,22 @@ local function onTeamsMessage(wsType, message)
         teamsWebsocket = nil
         teamsPairing = false
         if running then
-            TeamsMonitor.logger.d("Teams WebSocket closed, probably because this app was blocked from the Third-party app API in teams.")
-            TeamsMonitor.logger.d("Go to Settings > Privacy > Third-party app API > Manage API and remove the application from block.")
+                closedCount = closedCount + 1
+                if closedCount > 3 then
+                TeamsMonitor.logger.w("Teams WebSocket closed multiple times in a row")
+                TeamsMonitor.logger.w("This likely means this app was blocked from the Third-party app API in teams.")
+                TeamsMonitor.logger.w("Go to `Settings > Privacy > Third-party app API > Manage API` and remove the application from block.")
+                TeamsMonitor.logger.w("Then restart this spoon.")
+                TeamsMonitor:stop()
+            else
+                TeamsMonitor.logger.i("Teams not available, retrying in 5 seconds")
+                hs.timer.doAfter(5, connectToTeams)
+            end
         end
 
     elseif wsType == "fail" then
         teamsWebsocket = nil
-        TeamsMonitor.logger.d("Teams not available, retrying in 30 seconds")
+        TeamsMonitor.logger.w("Teams not available, retrying in 30 seconds")
         hs.timer.doAfter(30, connectToTeams)
     end
 end
@@ -221,6 +231,7 @@ end
 function TeamsMonitor:stop()
     TeamsMonitor.logger.d("TeamsMonitor:stop()")
     running = false
+    closedCount = 0
     disconnectFromTeams()
     return self
 end
