@@ -14,10 +14,13 @@ local running = false
 
 
 -- Events
+--- ZoomMonitor.events.meetingChange
+--- Constant
+--- Pseudo-event for `ZoomMonitor:subscribe()`: The meeting state has changed
 local EventHandler = dofile(hs.spoons.resourcePath("EventHandler.lua"))({"meetingChange"}, ZoomMonitor.name)
 
 
---- ZoomMonitor:subscribe(event, fn) -> ZoomMonitor object
+--- ZoomMonitor:subscribe(event, fn) -> ZoomMonitor
 --- Method
 --- Subscribe to one event with one or more functions
 ---
@@ -34,7 +37,7 @@ function ZoomMonitor:subscribe(event, fns)
     return self
 end
 
---- ZoomMonitor:unsubscribe(event, fn) -> ZoomMonitor object
+--- ZoomMonitor:unsubscribe(event, fn) -> ZoomMonitor
 --- Method
 --- Removes one or more event subscriptions
 ---
@@ -51,7 +54,7 @@ function ZoomMonitor:unsubscribe(event,fn)
     return self
 end
 
---- ZoomMonitor:unsubscribeEvent(event) -> ZoomMonitor object
+--- ZoomMonitor:unsubscribeEvent(event) -> ZoomMonitor
 --- Method
 --- Removes all subscriptions from one event
 ---
@@ -68,7 +71,7 @@ function ZoomMonitor:unsubscribeEvent(event)
  end
 
 
---- ZoomMonitor:unsubscribeAll() -> ZoomMonitor object
+--- ZoomMonitor:unsubscribeAll() -> ZoomMonitor
 --- Method
 --- Removes all subscriptions from one event
 ---
@@ -91,8 +94,15 @@ function ZoomMonitor:unsubscribeAll()
 -- Zoom Monitor
 -------------------------------------------
 
+
+--- ZoomMonitor.zoom
+--- Variable
+--- (Read-only) The hs.application for zoom if it is running, otherwise nil
 local zoom = nil
 
+--- ZoomMonitor.meetingState
+--- Variable
+--- (Read-only) Either false (when not in a meeting) or a table (when in a meeting)
 ---@type boolean | table
 local meetingState = false
 
@@ -193,7 +203,7 @@ ZoomMonitor = setmetatable(ZoomMonitor, {
     --SET
     __newindex = function (table, key, value)
         if key=="events" or key=="meetingState" or "zoom" then --luacheck: ignore 542
-            -- skip writing events to EventHandler as it is a read-only field
+            -- skip read-only fields
         else
             rawset(table, key, value)
         end

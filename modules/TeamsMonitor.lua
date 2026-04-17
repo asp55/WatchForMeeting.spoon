@@ -12,7 +12,9 @@ TeamsMonitor.logger = hs.logger.new(TeamsMonitor.name, 5)
 
 
 
-
+--- TeamsMonitor.meetingState
+--- Variable
+--- (Read-only) Either false (when not in a meeting) or a table (when in a meeting)
 ---@type boolean | table
 local meetingState = false
 
@@ -28,6 +30,10 @@ local running = false
 
 
 -- Events
+--- TeamsMonitor.events.meetingChange
+--- Constant
+--- Pseudo-event for `TeamsMonitor:subscribe()`: The meeting state has changed
+
 local EventHandler = dofile(hs.spoons.resourcePath("EventHandler.lua"))({"meetingChange"}, TeamsMonitor.name)
 
 
@@ -48,7 +54,7 @@ function TeamsMonitor:subscribe(event, fns)
     return self
 end
 
---- TeamsMonitor:unsubscribe(event, fn) -> TeamsMonitor object
+--- TeamsMonitor:unsubscribe(event, fn) -> TeamsMonitor
 --- Method
 --- Removes one or more event subscriptions
 ---
@@ -65,7 +71,7 @@ function TeamsMonitor:unsubscribe(event,fn)
     return self
 end
 
---- TeamsMonitor:unsubscribeEvent(event) -> TeamsMonitor object
+--- TeamsMonitor:unsubscribeEvent(event) -> TeamsMonitor
 --- Method
 --- Removes all subscriptions from one event
 ---
@@ -83,7 +89,7 @@ end
 
 
 
---- TeamsMonitor:unsubscribeAll() -> TeamsMonitor object
+--- TeamsMonitor:unsubscribeAll() -> TeamsMonitor
 --- Method
 --- Removes all subscriptions from one event
 ---
@@ -219,6 +225,16 @@ connectToTeams = function()
     end)
 end
 
+--- TeamsMonitor:start() -> TeamsMonitor
+--- Method
+--- Starts a TeamsMonitor object
+---
+--- Parameters:
+---  * None
+---
+--- Returns:
+---  * The `TeamsMonitor` object for method chaining
+--- 
 function TeamsMonitor:start()
     TeamsMonitor.logger.d("TeamsMonitor:start()"..((teamsWebsocket and " - skipping") or " - starting"))
     if not teamsWebsocket then
@@ -228,6 +244,16 @@ function TeamsMonitor:start()
     return self
 end
 
+--- TeamsMonitor:stop() -> TeamsMonitor
+--- Method
+--- Stops a TeamsMonitor object
+---
+--- Parameters:
+---  * None
+---
+--- Returns:
+---  * The `TeamsMonitor` object for method chaining
+--- 
 function TeamsMonitor:stop()
     TeamsMonitor.logger.d("TeamsMonitor:stop()")
     running = false
@@ -256,7 +282,7 @@ TeamsMonitor = setmetatable(TeamsMonitor, {
     --SET
     __newindex = function (table, key, value)
         if key=="events" or key=="meetingState" then --luacheck: ignore 542
-            -- skip writing events to EventHandler as it is a read-only field
+            -- skip read-only fields
         else
             rawset(table, key, value)
         end

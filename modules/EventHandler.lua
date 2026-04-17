@@ -27,6 +27,15 @@ return function(acceptedEvents, objectName)
         end
     end
 
+    --- EventHandler:emit(event) -> EventHandler
+    --- Method
+    --- Trigger event
+    ---
+    --- Parameters:
+    ---  * event - string of the event to emit
+    ---
+    --- Returns:
+    ---  * The `EventHandler` object for method chaining
     function EventHandler:emit(event)
         EventHandler.logger.v('Emit '..eventNames[event])
         
@@ -38,12 +47,12 @@ return function(acceptedEvents, objectName)
     end
 
 
-    --- EventHandler:subscribe(event, fn)
+    --- EventHandler:subscribe(event, fn) -> EventHandler
     --- Method
     --- Subscribe to one event with one or more functions
     ---
     --- Parameters:
-    ---  * event - string of the event to subscribe to (see the `spoon.WatchForMeeting` constants)
+    ---  * event - string of the event to subscribe to
     ---  * fn - function or list of functions, the callback(s) to add for the event(s); 
     ---
     --- Returns:
