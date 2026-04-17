@@ -62,51 +62,51 @@ TeamsMonitor.version = WatchForMeeting.version
 --- WatchForMeeting.events.meetingChange
 --- Constant
 --- Pseudo-event for `WatchForMeeting:subscribe()`: The meeting state has changed
---- 
+
 --- WatchForMeeting.events.meetingStarted
 --- Constant
 --- Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has started
---- 
+
 --- WatchForMeeting.events.meetingStopped
 --- Constant
 --- Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has ended
---- 
+
 --- WatchForMeeting.events.micChange
 --- Constant
 --- Pseudo-event for `WatchForMeeting:subscribe()`: The state of the microphone has changed
---- 
+
 --- WatchForMeeting.events.micOn
 --- Constant
 --- Pseudo-event for `WatchForMeeting:subscribe()`: The microphone is live
---- 
+
 --- WatchForMeeting.events.micOff
 --- Constant
 --- Pseudo-event for `WatchForMeeting:subscribe()`: The microphone has been muted
---- 
+
 --- WatchForMeeting.events.videoChange
 --- Constant
 --- Pseudo-event for `WatchForMeeting:subscribe()`: The state of the camera has changed
---- 
+
 --- WatchForMeeting.events.videoOn
 --- Constant
 --- Pseudo-event for `WatchForMeeting:subscribe()`: The camera is on
---- 
+
 --- WatchForMeeting.events.videoOff
 --- Constant
 --- Pseudo-event for `WatchForMeeting:subscribe()`: The camera is off
---- 
+
 --- WatchForMeeting.events.screensharingChange
 --- Constant
 --- Pseudo-event for `WatchForMeeting:subscribe()`: The state of the screen sharing has changed
---- 
+
 --- WatchForMeeting.events.screensharingOn
 --- Constant
 --- Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is on
---- 
+
 --- WatchForMeeting.events.screensharingOff
 --- Constant
 --- Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is off
---- 
+
 local events = {
    "meetingChange",
    "meetingStarted",
@@ -706,7 +706,7 @@ local function stopMonitors(except)
    end
 end
 
---- WatchForMeeting:start() -> WatchForMeeting
+--- WatchForMeeting:start() -> spoon.WatchForMeeting
 --- Method
 --- Starts a WatchForMeeting object
 ---
@@ -714,7 +714,8 @@ end
 ---  * None
 ---
 --- Returns:
----  * The spoon.WatchForMeeting object
+---  * The `spoon.WatchForMeeting` object for method chaining
+--- 
 function WatchForMeeting:start()
    log.d("WatchForMeeting:start()")
 
@@ -736,7 +737,7 @@ function WatchForMeeting:start()
    end
    return self
 end
---- WatchForMeeting:stop()
+--- WatchForMeeting:stop() -> spoon.WatchForMeeting
 --- Method
 --- Stops a WatchForMeeting object
 ---
@@ -744,7 +745,7 @@ end
 ---  * None
 ---
 --- Returns:
----  * The spoon.WatchForMeeting object
+---  * The `spoon.WatchForMeeting` object for method chaining
 function WatchForMeeting:stop()
    log.d("WatchForMeeting:stop()")
    running = false
@@ -757,7 +758,7 @@ function WatchForMeeting:stop()
    stopMonitors()
    return self
 end
---- WatchForMeeting:restart()
+--- WatchForMeeting:restart() -> spoon.WatchForMeeting
 --- Method
 --- Restarts a WatchForMeeting object
 ---
@@ -765,7 +766,7 @@ end
 ---  * None
 ---
 --- Returns:
----  * The spoon.WatchForMeeting object
+---  * The `spoon.WatchForMeeting` object for method chaining
 function WatchForMeeting:restart()
    self:stop()
    return self:start()
@@ -801,7 +802,7 @@ end
 ZoomMonitor:subscribe(ZoomMonitor.events.meetingChange, HandleZoomChange)
 TeamsMonitor:subscribe(TeamsMonitor.events.meetingChange, HandleTeamsChange)
 
---- WatchForMeeting:auto()
+--- WatchForMeeting:auto() -> spoon.WatchForMeeting
 --- Method
 --- Monitors meetings and updates status accordingly
 ---
@@ -809,7 +810,7 @@ TeamsMonitor:subscribe(TeamsMonitor.events.meetingChange, HandleTeamsChange)
 ---  * None
 ---
 --- Returns:
----  * The spoon.WatchForMeeting object
+---  * The `spoon.WatchForMeeting` object for method chaining
 function WatchForMeeting:auto()
    _internal.mode = 0
    if(running) then
@@ -837,7 +838,7 @@ end
 
 
 
---- WatchForMeeting:fake(mic_open, video_on, sharing)
+--- WatchForMeeting:fake(mic_open, video_on, sharing) -> spoon.WatchForMeeting
 --- Method
 --- Disables monitoring and reports as being in a meeting. Useful when meeting type is not supported.
 ---
@@ -847,7 +848,7 @@ end
 ---  * sharing - A boolean indicating if screen sharing is on
 ---
 --- Returns:
----  * The spoon.WatchForMeeting object
+---  * The `spoon.WatchForMeeting` object for method chaining
 function WatchForMeeting:fake(_mic_open, _video_on, _sharing)
    _internal.mode = 1
    if(running) then
@@ -884,7 +885,7 @@ function WatchForMeeting:fake(_mic_open, _video_on, _sharing)
    return self
 end
 
---- WatchForMeeting:subscribe(event, fn)
+--- WatchForMeeting:subscribe(event, fn) -> spoon.WatchForMeeting
 --- Method
 --- Subscribe to one event with one or more functions
 ---
@@ -899,7 +900,7 @@ function WatchForMeeting:subscribe(event, fns)
    return self
 end
 
---- WatchForMeeting:unsubscribe(event, fn) -> hs.window.filter object
+--- WatchForMeeting:unsubscribe(event, fn) -> spoon.WatchForMeeting
 --- Method
 --- Removes one or more event subscriptions
 ---
@@ -915,7 +916,7 @@ function WatchForMeeting:unsubscribe(event,fn)
    return self
 end
 
---- WatchForMeeting:unsubscribeEvent(event) -> hs.window.filter object
+--- WatchForMeeting:unsubscribeEvent(event) -> spoon.WatchForMeeting
 --- Method
 --- Removes all subscriptions from one event
 ---
