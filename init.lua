@@ -59,6 +59,10 @@ TeamsMonitor.version = WatchForMeeting.version
 -------------------------------------------
 -- Declare Event Constants
 -------------------------------------------
+--- WatchForMeeting.events
+--- Constant
+--- Table of available Pseudo-events for `WatchForMeeting:subscribe()`: See below
+
 --- WatchForMeeting.events.meetingChange
 --- Constant
 --- Pseudo-event for `WatchForMeeting:subscribe()`: The meeting state has changed

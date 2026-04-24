@@ -2,12 +2,34 @@
   {
     "Constant" : [
       {
+        "doc" : "Table of available Pseudo-events for `WatchForMeeting:subscribe()`: See below",
+        "desc" : "Table of available Pseudo-events for `WatchForMeeting:subscribe()`: See below",
+        "parameters" : [
+
+        ],
+        "stripped_doc" : [
+          "Table of available Pseudo-events for `WatchForMeeting:subscribe()`: See below"
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "WatchForMeeting.events",
+        "type" : "Constant",
+        "returns" : [
+
+        ],
+        "def" : "WatchForMeeting.events",
+        "name" : "events"
+      },
+      {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The meeting state has changed",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The meeting state has changed",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: The meeting state has changed"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The meeting state has changed",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -17,17 +39,17 @@
 
         ],
         "def" : "WatchForMeeting.events.meetingChange",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has started",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has started",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has started"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has started",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -37,17 +59,17 @@
 
         ],
         "def" : "WatchForMeeting.events.meetingStarted",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has ended",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has ended",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has ended"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has ended",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -57,17 +79,17 @@
 
         ],
         "def" : "WatchForMeeting.events.meetingStopped",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the microphone has changed",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the microphone has changed",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the microphone has changed"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the microphone has changed",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -77,17 +99,17 @@
 
         ],
         "def" : "WatchForMeeting.events.micChange",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone is live",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone is live",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone is live"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone is live",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -97,17 +119,17 @@
 
         ],
         "def" : "WatchForMeeting.events.micOn",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone has been muted",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone has been muted",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone has been muted"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone has been muted",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -117,17 +139,17 @@
 
         ],
         "def" : "WatchForMeeting.events.micOff",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the camera has changed",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the camera has changed",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the camera has changed"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the camera has changed",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -137,17 +159,17 @@
 
         ],
         "def" : "WatchForMeeting.events.videoChange",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is on",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is on",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is on"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is on",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -157,17 +179,17 @@
 
         ],
         "def" : "WatchForMeeting.events.videoOn",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is off",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is off",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is off"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is off",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -177,17 +199,17 @@
 
         ],
         "def" : "WatchForMeeting.events.videoOff",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the screen sharing has changed",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the screen sharing has changed",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the screen sharing has changed"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the screen sharing has changed",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -197,17 +219,17 @@
 
         ],
         "def" : "WatchForMeeting.events.screensharingChange",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is on",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is on",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is on"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is on",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -217,17 +239,17 @@
 
         ],
         "def" : "WatchForMeeting.events.screensharingOn",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is off",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is off",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is off"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is off",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -237,9 +259,7 @@
 
         ],
         "def" : "WatchForMeeting.events.screensharingOff",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       }
     ],
     "submodules" : [
@@ -251,11 +271,13 @@
     "Variable" : [
       {
         "doc" : "hs.logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.",
+        "desc" : "hs.logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "hs.logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon."
         ],
-        "desc" : "hs.logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.",
-        "name" : "logger",
         "notes" : [
 
         ],
@@ -265,12 +287,14 @@
 
         ],
         "def" : "WatchForMeeting.logger",
-        "parameters" : [
-
-        ]
+        "name" : "logger"
       },
       {
         "doc" : "A Table containing the settings that control sharing.\n\n| Key | Description | Default |\n| --- | ----------- | ------- |\n| enabled | Whether or not sharing is enabled.<br\/><br\/>When false, the spoon will still monitor meeting status to [meetingState](#meetingState), but you will need to write your own automations for what to do with that info. | _true_ |\n| useServer | Do you want to use an external server? (See *Configuration Options* below) | _false_ |\n| | ↓ _required info when `useServer=false`_ | |\n| port | What port to run the self hosted server when WatchForMeeting.sharing.useServer is false. | _8080_ |\n| | ↓ _required info when `useServer=true`_ | |\n| serverURL | The complete url for the external server, including port. IE: `http:\/\/localhost:8080` | _nil_ |\n| key | UUID to identify the room. Value is provided when the room is added on the server side. | _nil_ |\n| maxConnectionAttempts | Maximum number of connection attempts when using an external server. When less than 0, infinite retrys | _-1_ |\n| waitBeforeRetry | Time, in seconds, between connection attempts when using an external server | _5_ |\n\n# Configuration Options\n## Default\nIn order to minimize dependencies, by default this spoon uses a [hs.httpserver](https:\/\/www.hammerspoon.org\/docs\/hs.httpserver.html) to host the status page. This comes with a significant downside of: only the last client to load the page will receive status updates. Any previously connected clients will remain stuck at the last update they received before that client connected.\n\nOnce you are running the spoon, assuming you haven't changed the port (and nothing else is running at that location) you can reach your status page at http:\/\/localhost:8080\n\n## Better - MeetingStatusServer\nFor a better experience I recommend utilizing an external server to receive updates via websockets, and broadcast them to as many clients as you wish to connect.\n\nFor that purpose I've built [http:\/\/github.com\/asp55\/MeetingStatusServer](http:\/\/github.com\/asp55\/MeetingStatusServer) which runs on node.js and can either be run locally as its own thing, or hosted remotely.\n\nIf using the external server, you will to create a key to identify your \"room\" and then provide that information to the spoon.\nIn that case, before `spoon.WatchForMeeting:start()` add the following to your `~\/.hammerspoon\/init.lua`\n\n```\nspoon.WatchForMeeting.sharing.useServer = true\nspoon.WatchForMeeting.sharing.serverURL=\"[YOUR SERVER URL]\"\nspoon.WatchForMeeting.sharing.key=\"[YOUR KEY]\"\n```\n\nor\n\n```\nspoon.WatchForMeeting.sharing = {\n  useServer = true,\n  serverURL = \"[YOUR SERVER URL]\",\n  key=\"[YOUR KEY]\"\n}\n```\n\n## Disable\nIf you don't want to broadcast your status to a webpage, simply disable sharing\n```\n  spoon.WatchForMeeting.sharing = {\n    enabled = false\n  }\n```",
+        "desc" : "A Table containing the settings that control sharing.",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "A Table containing the settings that control sharing.",
           "",
@@ -324,8 +348,6 @@
           "  }",
           "```"
         ],
-        "desc" : "A Table containing the settings that control sharing.",
-        "name" : "sharing",
         "notes" : [
 
         ],
@@ -335,12 +357,14 @@
 
         ],
         "def" : "WatchForMeeting.sharing",
-        "parameters" : [
-
-        ]
+        "name" : "sharing"
       },
       {
         "doc" : "A Table containing the settings that control sharing.\n\n| Key | Description | Default |\n| --- | ----------- | ------- |\n| enabled | Whether or not to show the menu bar. | _true_ |\n| color | Whether or not to use color icons. | _true_ |\n| detailed | Whether or not to use the detailed icon set. | _true_ |\n| showFullState | Whether the menubar icon should represent the full state<br\/>(IE: Mic On\/Off, Video On\/Off, & Screen Sharing) | _true_ |\n\n\n## Icons\n\n<table>\n  <thead>\n  <tr>\n  <th>\n    <code>WatchForMeeting.menuBar = {...}<\/code> &#8594;\n  <\/th>\n  <th><code>color=true,<\/code><br\/><code>detailed=true,<\/code><\/th>\n  <th><code>color=true,<\/code><br\/><code>detailed=false,<\/code><\/th>\n  <th><code>color=false,<\/code><br\/><code>detailed=true,<\/code><\/th>\n  <th><code>color=false,<\/code><br\/><code>detailed=false,<\/code><\/th>\n  <\/tr>\n  <tr>\n  <th>State (See: <a href=\"#meetingState\">WatchForMeeting.meetingState<\/a>) &#8595;\n  <\/th>\n  <th colspan=\"4\"><code>showFullState=true<\/code> or <code>showFullState=false<\/code><\/th>\n  <\/tr>\n  <\/thead>\n  <tbody>\n    <tr>\n      <td>Available<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Free.png\" alt=\"Free slash Available\" height=\"16\" \/><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Free.png\" alt=\"Free slash Available\" height=\"16\" \/><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Free.png\" alt=\"Free slash Available\" height=\"16\" \/><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Free.png\" alt=\"Free slash Available\" height=\"16\" \/><\/td>\n    <\/tr>\n    <tr>\n      <td>Busy<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting.png\" alt=\"In meeting, no additional status\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting.png\" alt=\"In meeting, no additional status\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting.png\" alt=\"In meeting, no additional status\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting.png\" alt=\"In meeting, no additional status\" height=\"16\"><\/td>\n    <\/tr>\n  <tr>\n  <td><\/td>\n  <th colspan=\"4\"><code>showFullState=true<\/code> only<\/th>\n  <\/tr>\n    <tr>\n      <td>Busy + Mic On<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting-Mic.png\" alt=\"In meeting, mic:on, video:off, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting-Mic.png\" alt=\"In meeting, mic:on, video:off, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting-Mic.png\" alt=\"In meeting, mic:on, video:off, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting-Mic.png\" alt=\"In meeting, mic:on, video:off, screensharing:off\" height=\"16\"><\/td>\n    <\/tr>\n    <tr>\n      <td>Busy + Video On<\/td>\n    <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting-Vid.png\" alt=\"In meeting, mic:off, video:on, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting-Vid.png\" alt=\"In meeting, mic:off, video:on, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting-Vid.png\" alt=\"In meeting, mic:off, video:on, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting-Vid.png\" alt=\"In meeting, mic:off, video:on, screensharing:off\" height=\"16\"><\/td>\n    <\/tr>\n    <tr>\n      <td>Busy + Screen Sharing<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting-Screen.png\" alt=\"In meeting, mic:off, video:off, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting-Screen.png\" alt=\"In meeting, mic:off, video:off, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting-Screen.png\" alt=\"In meeting, mic:off, video:off, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting-Screen.png\" alt=\"In meeting, mic:off, video:off, screensharing:on\" height=\"16\"><\/td>\n    <\/tr>\n    <tr>\n      <td>Busy + Mic On + Video On<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting-Mic-Vid.png\" alt=\"In meeting, mic:on, video:on, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting-Mic-Vid.png\" alt=\"In meeting, mic:on, video:on, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting-Mic-Vid.png\" alt=\"In meeting, mic:on, video:on, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting-Mic-Vid.png\" alt=\"In meeting, mic:on, video:on, screensharing:off\" height=\"16\"><\/td>\n    <\/tr>\n    <tr>\n      <td>Busy + Mic On + Screen Sharing<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting-Mic-Screen.png\" alt=\"In meeting, mic:on, video:off, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting-Mic-Screen.png\" alt=\"In meeting, mic:on, video:off, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting-Mic-Screen.png\" alt=\"In meeting, mic:on, video:off, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting-Mic-Screen.png\" alt=\"In meeting, mic:on, video:off, screensharing:on\" height=\"16\"><\/td>\n    <\/tr>\n    <tr>\n      <td>Busy + Video On + Screen Sharing<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting-Vid-Screen.png\" alt=\"In meeting, mic:off, video:on, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting-Vid-Screen.png\" alt=\"In meeting, mic:off, video:on, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting-Vid-Screen.png\" alt=\"In meeting, mic:off, video:on, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting-Vid-Screen.png\" alt=\"In meeting, mic:off, video:on, screensharing:on\" height=\"16\"><\/td>\n    <\/tr>\n    <tr>\n      <td>Busy + Mic On + Video On + Screen Sharing<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting-Mic-Vid-Screen.png\" alt=\"In meeting, mic:on, video:on, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting-Mic-Vid-Screen.png\" alt=\"In meeting, mic:on, video:on, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting-Mic-Vid-Screen.png\" alt=\"In meeting, mic:on, video:on, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting-Mic-Vid-Screen.png\" alt=\"In meeting, mic:on, video:on, screensharing:on\" height=\"16\"><\/td>\n    <\/tr>\n  <\/tbody>\n<\/table>",
+        "desc" : "A Table containing the settings that control sharing.",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "A Table containing the settings that control sharing.",
           "",
@@ -442,8 +466,6 @@
           "  <\/tbody>",
           "<\/table>"
         ],
-        "desc" : "A Table containing the settings that control sharing.",
-        "name" : "menubar",
         "notes" : [
 
         ],
@@ -453,12 +475,14 @@
 
         ],
         "def" : "WatchForMeeting.menubar",
-        "parameters" : [
-
-        ]
+        "name" : "menubar"
       },
       {
         "doc" : "Number representing which mode WatchForMeeting should be running\n\n- *0* - Automatic (default)\n-- Monitors configured apps (see [apps](#apps)) and updates status accordingly\n- *1* - Busy\n-- Fakes a meeting. (Marks as in meeting, and signals that the mic is live, camera is on, and screen is sharing.) Useful when meeting type is not supported.",
+        "desc" : "Number representing which mode WatchForMeeting should be running",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Number representing which mode WatchForMeeting should be running",
           "",
@@ -467,8 +491,6 @@
           "- *1* - Busy",
           "-- Fakes a meeting. (Marks as in meeting, and signals that the mic is live, camera is on, and screen is sharing.) Useful when meeting type is not supported."
         ],
-        "desc" : "Number representing which mode WatchForMeeting should be running",
-        "name" : "mode",
         "notes" : [
 
         ],
@@ -478,12 +500,14 @@
 
         ],
         "def" : "WatchForMeeting.mode",
-        "parameters" : [
-
-        ]
+        "name" : "mode"
       },
       {
         "doc" : "A Table controlling which meeting apps are monitored in automatic mode.\n\n| Key | Description | Default |\n| --- | ----------- | ------- |\n| zoom | Monitor Zoom meetings via menu item polling | _true_ |\n| teams | Monitor Microsoft Teams meetings via local WebSocket API | _false_ |\n\nChanges take effect on the next call to `:start()` or `:restart()`.",
+        "desc" : "A Table controlling which meeting apps are monitored in automatic mode.",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "A Table controlling which meeting apps are monitored in automatic mode.",
           "",
@@ -494,8 +518,6 @@
           "",
           "Changes take effect on the next call to `:start()` or `:restart()`."
         ],
-        "desc" : "A Table controlling which meeting apps are monitored in automatic mode.",
-        "name" : "apps",
         "notes" : [
 
         ],
@@ -505,17 +527,17 @@
 
         ],
         "def" : "WatchForMeeting.apps",
-        "parameters" : [
-
-        ]
+        "name" : "apps"
       },
       {
         "doc" : "(Read-only) The hs.application for zoom if it is running, otherwise nil",
+        "desc" : "(Read-only) The hs.application for zoom if it is running, otherwise nil",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "(Read-only) The hs.application for zoom if it is running, otherwise nil"
         ],
-        "desc" : "(Read-only) The hs.application for zoom if it is running, otherwise nil",
-        "name" : "zoom",
         "notes" : [
 
         ],
@@ -525,12 +547,14 @@
 
         ],
         "def" : "WatchForMeeting.zoom",
-        "parameters" : [
-
-        ]
+        "name" : "zoom"
       },
       {
         "doc" : "(Read-only) Either false (when not in a meeting) or a table (when in a meeting)\n\n| Value                                                                   | Description  |\n| ----------------------------------------------------------------------- | -----------  |\n| `false`                                                                 | Available    |\n| `{mic_open = [Boolean],  video_on = [Boolean], sharing = [Boolean] }`   | Busy         |",
+        "desc" : "(Read-only) Either false (when not in a meeting) or a table (when in a meeting)",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "(Read-only) Either false (when not in a meeting) or a table (when in a meeting)",
           "",
@@ -539,8 +563,6 @@
           "| `false`                                                                 | Available    |",
           "| `{mic_open = [Boolean],  video_on = [Boolean], sharing = [Boolean] }`   | Busy         |"
         ],
-        "desc" : "(Read-only) Either false (when not in a meeting) or a table (when in a meeting)",
-        "name" : "meetingState",
         "notes" : [
 
         ],
@@ -550,17 +572,17 @@
 
         ],
         "def" : "WatchForMeeting.meetingState",
-        "parameters" : [
-
-        ]
+        "name" : "meetingState"
       },
       {
         "doc" : "(Read-only) string representing the name of the application providing the meeting state. Empty when not in a meeting.",
+        "desc" : "(Read-only) string representing the name of the application providing the meeting state. Empty when not in a meeting.",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "(Read-only) string representing the name of the application providing the meeting state. Empty when not in a meeting."
         ],
-        "desc" : "(Read-only) string representing the name of the application providing the meeting state. Empty when not in a meeting.",
-        "name" : "meetingApp",
         "notes" : [
 
         ],
@@ -570,17 +592,17 @@
 
         ],
         "def" : "WatchForMeeting.meetingApp",
-        "parameters" : [
-
-        ]
+        "name" : "meetingApp"
       },
       {
         "doc" : "(Read-only) Boolean representing if the meeting is real or faked",
+        "desc" : "(Read-only) Boolean representing if the meeting is real or faked",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "(Read-only) Boolean representing if the meeting is real or faked"
         ],
-        "desc" : "(Read-only) Boolean representing if the meeting is real or faked",
-        "name" : "faking",
         "notes" : [
 
         ],
@@ -590,34 +612,33 @@
 
         ],
         "def" : "WatchForMeeting.faking",
-        "parameters" : [
-
-        ]
+        "name" : "faking"
       }
     ],
     "stripped_doc" : [
 
     ],
+    "desc" : "A Spoon to answer the question",
     "Deprecated" : [
 
     ],
     "type" : "Module",
-    "desc" : "A Spoon to answer the question",
     "Constructor" : [
 
     ],
-    "Field" : [
-
-    ],
+    "doc" : "A Spoon to answer the question\n> Are you in a meeting?\n\nWatches to see if:\n1) A supported application is running\n2) Are you on a call\n3) Are you on mute, is your camera on, and\/or are you screen sharing\n\nAnd then lets you share that information.\n\n# Installation & Basic Usage\nDownload the [Latest Release](https:\/\/github.com\/asp55\/WatchForMeeting.spoon\/releases\/latest) and unzip to `~\/.hammerspoon\/Spoons\/`\n\nTo get going right out of the box, in your `~\/.hammerspoon\/init.lua` add these lines:\n```\nhs.loadSpoon(\"WatchForMeeting\")\nspoon.WatchForMeeting:start()\n```\n\nThis will start the spoon monitoring for zoom calls, and come with the default status page, and menubar configurations.",
     "Method" : [
       {
         "doc" : "Starts a WatchForMeeting object\n\nParameters:\n * None\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Starts a WatchForMeeting object",
+        "parameters" : [
+          " * None",
+          ""
+        ],
         "stripped_doc" : [
           "Starts a WatchForMeeting object",
           ""
         ],
-        "desc" : "Starts a WatchForMeeting object",
-        "name" : "start",
         "notes" : [
 
         ],
@@ -627,19 +648,19 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:start() -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "name" : "start"
       },
       {
         "doc" : "Stops a WatchForMeeting object\n\nParameters:\n * None\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Stops a WatchForMeeting object",
+        "parameters" : [
+          " * None",
+          ""
+        ],
         "stripped_doc" : [
           "Stops a WatchForMeeting object",
           ""
         ],
-        "desc" : "Stops a WatchForMeeting object",
-        "name" : "stop",
         "notes" : [
 
         ],
@@ -649,19 +670,19 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:stop() -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "name" : "stop"
       },
       {
         "doc" : "Restarts a WatchForMeeting object\n\nParameters:\n * None\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Restarts a WatchForMeeting object",
+        "parameters" : [
+          " * None",
+          ""
+        ],
         "stripped_doc" : [
           "Restarts a WatchForMeeting object",
           ""
         ],
-        "desc" : "Restarts a WatchForMeeting object",
-        "name" : "restart",
         "notes" : [
 
         ],
@@ -671,19 +692,19 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:restart() -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "name" : "restart"
       },
       {
         "doc" : "Monitors meetings and updates status accordingly\n\nParameters:\n * None\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Monitors meetings and updates status accordingly",
+        "parameters" : [
+          " * None",
+          ""
+        ],
         "stripped_doc" : [
           "Monitors meetings and updates status accordingly",
           ""
         ],
-        "desc" : "Monitors meetings and updates status accordingly",
-        "name" : "auto",
         "notes" : [
 
         ],
@@ -693,19 +714,21 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:auto() -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "name" : "auto"
       },
       {
         "doc" : "Disables monitoring and reports as being in a meeting. Useful when meeting type is not supported.\n\nParameters:\n * mic_open - A boolean indicating if the mic is open\n * video_on - A boolean indicating if the video camera is on\n * sharing - A boolean indicating if screen sharing is on\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Disables monitoring and reports as being in a meeting. Useful when meeting type is not supported.",
+        "parameters" : [
+          " * mic_open - A boolean indicating if the mic is open",
+          " * video_on - A boolean indicating if the video camera is on",
+          " * sharing - A boolean indicating if screen sharing is on",
+          ""
+        ],
         "stripped_doc" : [
           "Disables monitoring and reports as being in a meeting. Useful when meeting type is not supported.",
           ""
         ],
-        "desc" : "Disables monitoring and reports as being in a meeting. Useful when meeting type is not supported.",
-        "name" : "fake",
         "notes" : [
 
         ],
@@ -715,21 +738,20 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:fake(mic_open, video_on, sharing) -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * mic_open - A boolean indicating if the mic is open",
-          " * video_on - A boolean indicating if the video camera is on",
-          " * sharing - A boolean indicating if screen sharing is on",
-          ""
-        ]
+        "name" : "fake"
       },
       {
         "doc" : "Subscribe to one event with one or more functions\n\nParameters:\n * event - string of the event to subscribe to (see the `spoon.WatchForMeeting` constants)\n * fn - function or list of functions, the callback(s) to add for the event(s);\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Subscribe to one event with one or more functions",
+        "parameters" : [
+          " * event - string of the event to subscribe to (see the `spoon.WatchForMeeting` constants)",
+          " * fn - function or list of functions, the callback(s) to add for the event(s);",
+          ""
+        ],
         "stripped_doc" : [
           "Subscribe to one event with one or more functions",
           ""
         ],
-        "desc" : "Subscribe to one event with one or more functions",
-        "name" : "subscribe",
         "notes" : [
 
         ],
@@ -739,20 +761,20 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:subscribe(event, fn) -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * event - string of the event to subscribe to (see the `spoon.WatchForMeeting` constants)",
-          " * fn - function or list of functions, the callback(s) to add for the event(s);",
-          ""
-        ]
+        "name" : "subscribe"
       },
       {
         "doc" : "Removes one or more event subscriptions\n\nParameters:\n * event - string of the event to unsubscribe;\n * fn - function or list of functions, the callback(s) to remove; if omitted, all callbacks will be unsubscribed from `event`(s)\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Removes one or more event subscriptions",
+        "parameters" : [
+          " * event - string of the event to unsubscribe;",
+          " * fn - function or list of functions, the callback(s) to remove; if omitted, all callbacks will be unsubscribed from `event`(s)",
+          ""
+        ],
         "stripped_doc" : [
           "Removes one or more event subscriptions",
           ""
         ],
-        "desc" : "Removes one or more event subscriptions",
-        "name" : "unsubscribe",
         "notes" : [
 
         ],
@@ -762,20 +784,19 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:unsubscribe(event, fn) -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * event - string of the event to unsubscribe;",
-          " * fn - function or list of functions, the callback(s) to remove; if omitted, all callbacks will be unsubscribed from `event`(s)",
-          ""
-        ]
+        "name" : "unsubscribe"
       },
       {
         "doc" : "Removes all subscriptions from one event\n\nParameters:\n * event - string of the event to unsubscribe; ;\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Removes all subscriptions from one event",
+        "parameters" : [
+          " * event - string of the event to unsubscribe; ;",
+          ""
+        ],
         "stripped_doc" : [
           "Removes all subscriptions from one event",
           ""
         ],
-        "desc" : "Removes all subscriptions from one event",
-        "name" : "unsubscribeEvent",
         "notes" : [
 
         ],
@@ -785,63 +806,45 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:unsubscribeEvent(event) -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * event - string of the event to unsubscribe; ;",
-          ""
-        ]
+        "name" : "unsubscribeEvent"
       }
     ],
     "Command" : [
 
     ],
+    "Field" : [
+
+    ],
     "items" : [
       {
-        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The meeting state has changed",
-        "stripped_doc" : [
-          "Pseudo-event for `WatchForMeeting:subscribe()`: The meeting state has changed"
+        "doc" : "Table of available Pseudo-events for `WatchForMeeting:subscribe()`: See below",
+        "desc" : "Table of available Pseudo-events for `WatchForMeeting:subscribe()`: See below",
+        "parameters" : [
+
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The meeting state has changed",
-        "name" : "events",
+        "stripped_doc" : [
+          "Table of available Pseudo-events for `WatchForMeeting:subscribe()`: See below"
+        ],
         "notes" : [
 
         ],
-        "signature" : "WatchForMeeting.events.meetingChange",
+        "signature" : "WatchForMeeting.events",
         "type" : "Constant",
         "returns" : [
 
         ],
-        "def" : "WatchForMeeting.events.meetingChange",
-        "parameters" : [
-
-        ]
-      },
-      {
-        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the screen sharing has changed",
-        "stripped_doc" : [
-          "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the screen sharing has changed"
-        ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the screen sharing has changed",
-        "name" : "events",
-        "notes" : [
-
-        ],
-        "signature" : "WatchForMeeting.events.screensharingChange",
-        "type" : "Constant",
-        "returns" : [
-
-        ],
-        "def" : "WatchForMeeting.events.screensharingChange",
-        "parameters" : [
-
-        ]
+        "def" : "WatchForMeeting.events",
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is on",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is on",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is on"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is on",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -851,57 +854,17 @@
 
         ],
         "def" : "WatchForMeeting.events.videoOn",
-        "parameters" : [
-
-        ]
-      },
-      {
-        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is on",
-        "stripped_doc" : [
-          "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is on"
-        ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is on",
-        "name" : "events",
-        "notes" : [
-
-        ],
-        "signature" : "WatchForMeeting.events.screensharingOn",
-        "type" : "Constant",
-        "returns" : [
-
-        ],
-        "def" : "WatchForMeeting.events.screensharingOn",
-        "parameters" : [
-
-        ]
-      },
-      {
-        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is off",
-        "stripped_doc" : [
-          "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is off"
-        ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is off",
-        "name" : "events",
-        "notes" : [
-
-        ],
-        "signature" : "WatchForMeeting.events.screensharingOff",
-        "type" : "Constant",
-        "returns" : [
-
-        ],
-        "def" : "WatchForMeeting.events.screensharingOff",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the camera has changed",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the camera has changed",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the camera has changed"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the camera has changed",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -911,57 +874,77 @@
 
         ],
         "def" : "WatchForMeeting.events.videoChange",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       },
       {
-        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is off",
-        "stripped_doc" : [
-          "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is off"
+        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the screen sharing has changed",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the screen sharing has changed",
+        "parameters" : [
+
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is off",
-        "name" : "events",
+        "stripped_doc" : [
+          "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the screen sharing has changed"
+        ],
         "notes" : [
 
         ],
-        "signature" : "WatchForMeeting.events.videoOff",
+        "signature" : "WatchForMeeting.events.screensharingChange",
         "type" : "Constant",
         "returns" : [
 
         ],
-        "def" : "WatchForMeeting.events.videoOff",
-        "parameters" : [
-
-        ]
+        "def" : "WatchForMeeting.events.screensharingChange",
+        "name" : "events"
       },
       {
-        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone is live",
-        "stripped_doc" : [
-          "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone is live"
+        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is off",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is off",
+        "parameters" : [
+
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone is live",
-        "name" : "events",
+        "stripped_doc" : [
+          "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is off"
+        ],
         "notes" : [
 
         ],
-        "signature" : "WatchForMeeting.events.micOn",
+        "signature" : "WatchForMeeting.events.screensharingOff",
         "type" : "Constant",
         "returns" : [
 
         ],
-        "def" : "WatchForMeeting.events.micOn",
+        "def" : "WatchForMeeting.events.screensharingOff",
+        "name" : "events"
+      },
+      {
+        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is on",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is on",
         "parameters" : [
 
-        ]
+        ],
+        "stripped_doc" : [
+          "Pseudo-event for `WatchForMeeting:subscribe()`: The screen sharing is on"
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "WatchForMeeting.events.screensharingOn",
+        "type" : "Constant",
+        "returns" : [
+
+        ],
+        "def" : "WatchForMeeting.events.screensharingOn",
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone has been muted",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone has been muted",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone has been muted"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone has been muted",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -971,57 +954,37 @@
 
         ],
         "def" : "WatchForMeeting.events.micOff",
-        "parameters" : [
-
-        ]
+        "name" : "events"
       },
       {
-        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has ended",
-        "stripped_doc" : [
-          "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has ended"
+        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is off",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is off",
+        "parameters" : [
+
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has ended",
-        "name" : "events",
+        "stripped_doc" : [
+          "Pseudo-event for `WatchForMeeting:subscribe()`: The camera is off"
+        ],
         "notes" : [
 
         ],
-        "signature" : "WatchForMeeting.events.meetingStopped",
+        "signature" : "WatchForMeeting.events.videoOff",
         "type" : "Constant",
         "returns" : [
 
         ],
-        "def" : "WatchForMeeting.events.meetingStopped",
-        "parameters" : [
-
-        ]
-      },
-      {
-        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has started",
-        "stripped_doc" : [
-          "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has started"
-        ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has started",
-        "name" : "events",
-        "notes" : [
-
-        ],
-        "signature" : "WatchForMeeting.events.meetingStarted",
-        "type" : "Constant",
-        "returns" : [
-
-        ],
-        "def" : "WatchForMeeting.events.meetingStarted",
-        "parameters" : [
-
-        ]
+        "def" : "WatchForMeeting.events.videoOff",
+        "name" : "events"
       },
       {
         "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the microphone has changed",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the microphone has changed",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the microphone has changed"
         ],
-        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The state of the microphone has changed",
-        "name" : "events",
         "notes" : [
 
         ],
@@ -1031,12 +994,94 @@
 
         ],
         "def" : "WatchForMeeting.events.micChange",
+        "name" : "events"
+      },
+      {
+        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The meeting state has changed",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The meeting state has changed",
         "parameters" : [
 
-        ]
+        ],
+        "stripped_doc" : [
+          "Pseudo-event for `WatchForMeeting:subscribe()`: The meeting state has changed"
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "WatchForMeeting.events.meetingChange",
+        "type" : "Constant",
+        "returns" : [
+
+        ],
+        "def" : "WatchForMeeting.events.meetingChange",
+        "name" : "events"
+      },
+      {
+        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone is live",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone is live",
+        "parameters" : [
+
+        ],
+        "stripped_doc" : [
+          "Pseudo-event for `WatchForMeeting:subscribe()`: The microphone is live"
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "WatchForMeeting.events.micOn",
+        "type" : "Constant",
+        "returns" : [
+
+        ],
+        "def" : "WatchForMeeting.events.micOn",
+        "name" : "events"
+      },
+      {
+        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has started",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has started",
+        "parameters" : [
+
+        ],
+        "stripped_doc" : [
+          "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has started"
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "WatchForMeeting.events.meetingStarted",
+        "type" : "Constant",
+        "returns" : [
+
+        ],
+        "def" : "WatchForMeeting.events.meetingStarted",
+        "name" : "events"
+      },
+      {
+        "doc" : "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has ended",
+        "desc" : "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has ended",
+        "parameters" : [
+
+        ],
+        "stripped_doc" : [
+          "Pseudo-event for `WatchForMeeting:subscribe()`: A meeting has ended"
+        ],
+        "notes" : [
+
+        ],
+        "signature" : "WatchForMeeting.events.meetingStopped",
+        "type" : "Constant",
+        "returns" : [
+
+        ],
+        "def" : "WatchForMeeting.events.meetingStopped",
+        "name" : "events"
       },
       {
         "doc" : "A Table controlling which meeting apps are monitored in automatic mode.\n\n| Key | Description | Default |\n| --- | ----------- | ------- |\n| zoom | Monitor Zoom meetings via menu item polling | _true_ |\n| teams | Monitor Microsoft Teams meetings via local WebSocket API | _false_ |\n\nChanges take effect on the next call to `:start()` or `:restart()`.",
+        "desc" : "A Table controlling which meeting apps are monitored in automatic mode.",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "A Table controlling which meeting apps are monitored in automatic mode.",
           "",
@@ -1047,8 +1092,6 @@
           "",
           "Changes take effect on the next call to `:start()` or `:restart()`."
         ],
-        "desc" : "A Table controlling which meeting apps are monitored in automatic mode.",
-        "name" : "apps",
         "notes" : [
 
         ],
@@ -1058,17 +1101,17 @@
 
         ],
         "def" : "WatchForMeeting.apps",
-        "parameters" : [
-
-        ]
+        "name" : "apps"
       },
       {
         "doc" : "(Read-only) Boolean representing if the meeting is real or faked",
+        "desc" : "(Read-only) Boolean representing if the meeting is real or faked",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "(Read-only) Boolean representing if the meeting is real or faked"
         ],
-        "desc" : "(Read-only) Boolean representing if the meeting is real or faked",
-        "name" : "faking",
         "notes" : [
 
         ],
@@ -1078,17 +1121,17 @@
 
         ],
         "def" : "WatchForMeeting.faking",
-        "parameters" : [
-
-        ]
+        "name" : "faking"
       },
       {
         "doc" : "hs.logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.",
+        "desc" : "hs.logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "hs.logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon."
         ],
-        "desc" : "hs.logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.",
-        "name" : "logger",
         "notes" : [
 
         ],
@@ -1098,17 +1141,17 @@
 
         ],
         "def" : "WatchForMeeting.logger",
-        "parameters" : [
-
-        ]
+        "name" : "logger"
       },
       {
         "doc" : "(Read-only) string representing the name of the application providing the meeting state. Empty when not in a meeting.",
+        "desc" : "(Read-only) string representing the name of the application providing the meeting state. Empty when not in a meeting.",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "(Read-only) string representing the name of the application providing the meeting state. Empty when not in a meeting."
         ],
-        "desc" : "(Read-only) string representing the name of the application providing the meeting state. Empty when not in a meeting.",
-        "name" : "meetingApp",
         "notes" : [
 
         ],
@@ -1118,12 +1161,14 @@
 
         ],
         "def" : "WatchForMeeting.meetingApp",
-        "parameters" : [
-
-        ]
+        "name" : "meetingApp"
       },
       {
         "doc" : "(Read-only) Either false (when not in a meeting) or a table (when in a meeting)\n\n| Value                                                                   | Description  |\n| ----------------------------------------------------------------------- | -----------  |\n| `false`                                                                 | Available    |\n| `{mic_open = [Boolean],  video_on = [Boolean], sharing = [Boolean] }`   | Busy         |",
+        "desc" : "(Read-only) Either false (when not in a meeting) or a table (when in a meeting)",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "(Read-only) Either false (when not in a meeting) or a table (when in a meeting)",
           "",
@@ -1132,8 +1177,6 @@
           "| `false`                                                                 | Available    |",
           "| `{mic_open = [Boolean],  video_on = [Boolean], sharing = [Boolean] }`   | Busy         |"
         ],
-        "desc" : "(Read-only) Either false (when not in a meeting) or a table (when in a meeting)",
-        "name" : "meetingState",
         "notes" : [
 
         ],
@@ -1143,12 +1186,14 @@
 
         ],
         "def" : "WatchForMeeting.meetingState",
-        "parameters" : [
-
-        ]
+        "name" : "meetingState"
       },
       {
         "doc" : "A Table containing the settings that control sharing.\n\n| Key | Description | Default |\n| --- | ----------- | ------- |\n| enabled | Whether or not to show the menu bar. | _true_ |\n| color | Whether or not to use color icons. | _true_ |\n| detailed | Whether or not to use the detailed icon set. | _true_ |\n| showFullState | Whether the menubar icon should represent the full state<br\/>(IE: Mic On\/Off, Video On\/Off, & Screen Sharing) | _true_ |\n\n\n## Icons\n\n<table>\n  <thead>\n  <tr>\n  <th>\n    <code>WatchForMeeting.menuBar = {...}<\/code> &#8594;\n  <\/th>\n  <th><code>color=true,<\/code><br\/><code>detailed=true,<\/code><\/th>\n  <th><code>color=true,<\/code><br\/><code>detailed=false,<\/code><\/th>\n  <th><code>color=false,<\/code><br\/><code>detailed=true,<\/code><\/th>\n  <th><code>color=false,<\/code><br\/><code>detailed=false,<\/code><\/th>\n  <\/tr>\n  <tr>\n  <th>State (See: <a href=\"#meetingState\">WatchForMeeting.meetingState<\/a>) &#8595;\n  <\/th>\n  <th colspan=\"4\"><code>showFullState=true<\/code> or <code>showFullState=false<\/code><\/th>\n  <\/tr>\n  <\/thead>\n  <tbody>\n    <tr>\n      <td>Available<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Free.png\" alt=\"Free slash Available\" height=\"16\" \/><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Free.png\" alt=\"Free slash Available\" height=\"16\" \/><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Free.png\" alt=\"Free slash Available\" height=\"16\" \/><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Free.png\" alt=\"Free slash Available\" height=\"16\" \/><\/td>\n    <\/tr>\n    <tr>\n      <td>Busy<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting.png\" alt=\"In meeting, no additional status\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting.png\" alt=\"In meeting, no additional status\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting.png\" alt=\"In meeting, no additional status\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting.png\" alt=\"In meeting, no additional status\" height=\"16\"><\/td>\n    <\/tr>\n  <tr>\n  <td><\/td>\n  <th colspan=\"4\"><code>showFullState=true<\/code> only<\/th>\n  <\/tr>\n    <tr>\n      <td>Busy + Mic On<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting-Mic.png\" alt=\"In meeting, mic:on, video:off, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting-Mic.png\" alt=\"In meeting, mic:on, video:off, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting-Mic.png\" alt=\"In meeting, mic:on, video:off, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting-Mic.png\" alt=\"In meeting, mic:on, video:off, screensharing:off\" height=\"16\"><\/td>\n    <\/tr>\n    <tr>\n      <td>Busy + Video On<\/td>\n    <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting-Vid.png\" alt=\"In meeting, mic:off, video:on, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting-Vid.png\" alt=\"In meeting, mic:off, video:on, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting-Vid.png\" alt=\"In meeting, mic:off, video:on, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting-Vid.png\" alt=\"In meeting, mic:off, video:on, screensharing:off\" height=\"16\"><\/td>\n    <\/tr>\n    <tr>\n      <td>Busy + Screen Sharing<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting-Screen.png\" alt=\"In meeting, mic:off, video:off, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting-Screen.png\" alt=\"In meeting, mic:off, video:off, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting-Screen.png\" alt=\"In meeting, mic:off, video:off, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting-Screen.png\" alt=\"In meeting, mic:off, video:off, screensharing:on\" height=\"16\"><\/td>\n    <\/tr>\n    <tr>\n      <td>Busy + Mic On + Video On<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting-Mic-Vid.png\" alt=\"In meeting, mic:on, video:on, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting-Mic-Vid.png\" alt=\"In meeting, mic:on, video:on, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting-Mic-Vid.png\" alt=\"In meeting, mic:on, video:on, screensharing:off\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting-Mic-Vid.png\" alt=\"In meeting, mic:on, video:on, screensharing:off\" height=\"16\"><\/td>\n    <\/tr>\n    <tr>\n      <td>Busy + Mic On + Screen Sharing<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting-Mic-Screen.png\" alt=\"In meeting, mic:on, video:off, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting-Mic-Screen.png\" alt=\"In meeting, mic:on, video:off, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting-Mic-Screen.png\" alt=\"In meeting, mic:on, video:off, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting-Mic-Screen.png\" alt=\"In meeting, mic:on, video:off, screensharing:on\" height=\"16\"><\/td>\n    <\/tr>\n    <tr>\n      <td>Busy + Video On + Screen Sharing<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting-Vid-Screen.png\" alt=\"In meeting, mic:off, video:on, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting-Vid-Screen.png\" alt=\"In meeting, mic:off, video:on, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting-Vid-Screen.png\" alt=\"In meeting, mic:off, video:on, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting-Vid-Screen.png\" alt=\"In meeting, mic:off, video:on, screensharing:on\" height=\"16\"><\/td>\n    <\/tr>\n    <tr>\n      <td>Busy + Mic On + Video On + Screen Sharing<\/td>\n      <td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Detailed\/Meeting-Mic-Vid-Screen.png\" alt=\"In meeting, mic:on, video:on, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Color\/Minimal\/Meeting-Mic-Vid-Screen.png\" alt=\"In meeting, mic:on, video:on, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Detailed\/Meeting-Mic-Vid-Screen.png\" alt=\"In meeting, mic:on, video:on, screensharing:on\" height=\"16\"><\/td>\n<td><img src=\"https:\/\/raw.githubusercontent.com\/asp55\/WatchForMeeting\/main\/menubar-icons\/Template\/Minimal\/Meeting-Mic-Vid-Screen.png\" alt=\"In meeting, mic:on, video:on, screensharing:on\" height=\"16\"><\/td>\n    <\/tr>\n  <\/tbody>\n<\/table>",
+        "desc" : "A Table containing the settings that control sharing.",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "A Table containing the settings that control sharing.",
           "",
@@ -1250,8 +1295,6 @@
           "  <\/tbody>",
           "<\/table>"
         ],
-        "desc" : "A Table containing the settings that control sharing.",
-        "name" : "menubar",
         "notes" : [
 
         ],
@@ -1261,12 +1304,14 @@
 
         ],
         "def" : "WatchForMeeting.menubar",
-        "parameters" : [
-
-        ]
+        "name" : "menubar"
       },
       {
         "doc" : "Number representing which mode WatchForMeeting should be running\n\n- *0* - Automatic (default)\n-- Monitors configured apps (see [apps](#apps)) and updates status accordingly\n- *1* - Busy\n-- Fakes a meeting. (Marks as in meeting, and signals that the mic is live, camera is on, and screen is sharing.) Useful when meeting type is not supported.",
+        "desc" : "Number representing which mode WatchForMeeting should be running",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "Number representing which mode WatchForMeeting should be running",
           "",
@@ -1275,8 +1320,6 @@
           "- *1* - Busy",
           "-- Fakes a meeting. (Marks as in meeting, and signals that the mic is live, camera is on, and screen is sharing.) Useful when meeting type is not supported."
         ],
-        "desc" : "Number representing which mode WatchForMeeting should be running",
-        "name" : "mode",
         "notes" : [
 
         ],
@@ -1286,12 +1329,14 @@
 
         ],
         "def" : "WatchForMeeting.mode",
-        "parameters" : [
-
-        ]
+        "name" : "mode"
       },
       {
         "doc" : "A Table containing the settings that control sharing.\n\n| Key | Description | Default |\n| --- | ----------- | ------- |\n| enabled | Whether or not sharing is enabled.<br\/><br\/>When false, the spoon will still monitor meeting status to [meetingState](#meetingState), but you will need to write your own automations for what to do with that info. | _true_ |\n| useServer | Do you want to use an external server? (See *Configuration Options* below) | _false_ |\n| | ↓ _required info when `useServer=false`_ | |\n| port | What port to run the self hosted server when WatchForMeeting.sharing.useServer is false. | _8080_ |\n| | ↓ _required info when `useServer=true`_ | |\n| serverURL | The complete url for the external server, including port. IE: `http:\/\/localhost:8080` | _nil_ |\n| key | UUID to identify the room. Value is provided when the room is added on the server side. | _nil_ |\n| maxConnectionAttempts | Maximum number of connection attempts when using an external server. When less than 0, infinite retrys | _-1_ |\n| waitBeforeRetry | Time, in seconds, between connection attempts when using an external server | _5_ |\n\n# Configuration Options\n## Default\nIn order to minimize dependencies, by default this spoon uses a [hs.httpserver](https:\/\/www.hammerspoon.org\/docs\/hs.httpserver.html) to host the status page. This comes with a significant downside of: only the last client to load the page will receive status updates. Any previously connected clients will remain stuck at the last update they received before that client connected.\n\nOnce you are running the spoon, assuming you haven't changed the port (and nothing else is running at that location) you can reach your status page at http:\/\/localhost:8080\n\n## Better - MeetingStatusServer\nFor a better experience I recommend utilizing an external server to receive updates via websockets, and broadcast them to as many clients as you wish to connect.\n\nFor that purpose I've built [http:\/\/github.com\/asp55\/MeetingStatusServer](http:\/\/github.com\/asp55\/MeetingStatusServer) which runs on node.js and can either be run locally as its own thing, or hosted remotely.\n\nIf using the external server, you will to create a key to identify your \"room\" and then provide that information to the spoon.\nIn that case, before `spoon.WatchForMeeting:start()` add the following to your `~\/.hammerspoon\/init.lua`\n\n```\nspoon.WatchForMeeting.sharing.useServer = true\nspoon.WatchForMeeting.sharing.serverURL=\"[YOUR SERVER URL]\"\nspoon.WatchForMeeting.sharing.key=\"[YOUR KEY]\"\n```\n\nor\n\n```\nspoon.WatchForMeeting.sharing = {\n  useServer = true,\n  serverURL = \"[YOUR SERVER URL]\",\n  key=\"[YOUR KEY]\"\n}\n```\n\n## Disable\nIf you don't want to broadcast your status to a webpage, simply disable sharing\n```\n  spoon.WatchForMeeting.sharing = {\n    enabled = false\n  }\n```",
+        "desc" : "A Table containing the settings that control sharing.",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "A Table containing the settings that control sharing.",
           "",
@@ -1345,8 +1390,6 @@
           "  }",
           "```"
         ],
-        "desc" : "A Table containing the settings that control sharing.",
-        "name" : "sharing",
         "notes" : [
 
         ],
@@ -1356,17 +1399,17 @@
 
         ],
         "def" : "WatchForMeeting.sharing",
-        "parameters" : [
-
-        ]
+        "name" : "sharing"
       },
       {
         "doc" : "(Read-only) The hs.application for zoom if it is running, otherwise nil",
+        "desc" : "(Read-only) The hs.application for zoom if it is running, otherwise nil",
+        "parameters" : [
+
+        ],
         "stripped_doc" : [
           "(Read-only) The hs.application for zoom if it is running, otherwise nil"
         ],
-        "desc" : "(Read-only) The hs.application for zoom if it is running, otherwise nil",
-        "name" : "zoom",
         "notes" : [
 
         ],
@@ -1376,18 +1419,19 @@
 
         ],
         "def" : "WatchForMeeting.zoom",
-        "parameters" : [
-
-        ]
+        "name" : "zoom"
       },
       {
         "doc" : "Monitors meetings and updates status accordingly\n\nParameters:\n * None\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Monitors meetings and updates status accordingly",
+        "parameters" : [
+          " * None",
+          ""
+        ],
         "stripped_doc" : [
           "Monitors meetings and updates status accordingly",
           ""
         ],
-        "desc" : "Monitors meetings and updates status accordingly",
-        "name" : "auto",
         "notes" : [
 
         ],
@@ -1397,19 +1441,21 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:auto() -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "name" : "auto"
       },
       {
         "doc" : "Disables monitoring and reports as being in a meeting. Useful when meeting type is not supported.\n\nParameters:\n * mic_open - A boolean indicating if the mic is open\n * video_on - A boolean indicating if the video camera is on\n * sharing - A boolean indicating if screen sharing is on\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Disables monitoring and reports as being in a meeting. Useful when meeting type is not supported.",
+        "parameters" : [
+          " * mic_open - A boolean indicating if the mic is open",
+          " * video_on - A boolean indicating if the video camera is on",
+          " * sharing - A boolean indicating if screen sharing is on",
+          ""
+        ],
         "stripped_doc" : [
           "Disables monitoring and reports as being in a meeting. Useful when meeting type is not supported.",
           ""
         ],
-        "desc" : "Disables monitoring and reports as being in a meeting. Useful when meeting type is not supported.",
-        "name" : "fake",
         "notes" : [
 
         ],
@@ -1419,21 +1465,19 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:fake(mic_open, video_on, sharing) -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * mic_open - A boolean indicating if the mic is open",
-          " * video_on - A boolean indicating if the video camera is on",
-          " * sharing - A boolean indicating if screen sharing is on",
-          ""
-        ]
+        "name" : "fake"
       },
       {
         "doc" : "Restarts a WatchForMeeting object\n\nParameters:\n * None\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Restarts a WatchForMeeting object",
+        "parameters" : [
+          " * None",
+          ""
+        ],
         "stripped_doc" : [
           "Restarts a WatchForMeeting object",
           ""
         ],
-        "desc" : "Restarts a WatchForMeeting object",
-        "name" : "restart",
         "notes" : [
 
         ],
@@ -1443,19 +1487,19 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:restart() -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "name" : "restart"
       },
       {
         "doc" : "Starts a WatchForMeeting object\n\nParameters:\n * None\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Starts a WatchForMeeting object",
+        "parameters" : [
+          " * None",
+          ""
+        ],
         "stripped_doc" : [
           "Starts a WatchForMeeting object",
           ""
         ],
-        "desc" : "Starts a WatchForMeeting object",
-        "name" : "start",
         "notes" : [
 
         ],
@@ -1465,19 +1509,19 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:start() -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "name" : "start"
       },
       {
         "doc" : "Stops a WatchForMeeting object\n\nParameters:\n * None\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Stops a WatchForMeeting object",
+        "parameters" : [
+          " * None",
+          ""
+        ],
         "stripped_doc" : [
           "Stops a WatchForMeeting object",
           ""
         ],
-        "desc" : "Stops a WatchForMeeting object",
-        "name" : "stop",
         "notes" : [
 
         ],
@@ -1487,19 +1531,20 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:stop() -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * None",
-          ""
-        ]
+        "name" : "stop"
       },
       {
         "doc" : "Subscribe to one event with one or more functions\n\nParameters:\n * event - string of the event to subscribe to (see the `spoon.WatchForMeeting` constants)\n * fn - function or list of functions, the callback(s) to add for the event(s);\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Subscribe to one event with one or more functions",
+        "parameters" : [
+          " * event - string of the event to subscribe to (see the `spoon.WatchForMeeting` constants)",
+          " * fn - function or list of functions, the callback(s) to add for the event(s);",
+          ""
+        ],
         "stripped_doc" : [
           "Subscribe to one event with one or more functions",
           ""
         ],
-        "desc" : "Subscribe to one event with one or more functions",
-        "name" : "subscribe",
         "notes" : [
 
         ],
@@ -1509,20 +1554,20 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:subscribe(event, fn) -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * event - string of the event to subscribe to (see the `spoon.WatchForMeeting` constants)",
-          " * fn - function or list of functions, the callback(s) to add for the event(s);",
-          ""
-        ]
+        "name" : "subscribe"
       },
       {
         "doc" : "Removes one or more event subscriptions\n\nParameters:\n * event - string of the event to unsubscribe;\n * fn - function or list of functions, the callback(s) to remove; if omitted, all callbacks will be unsubscribed from `event`(s)\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Removes one or more event subscriptions",
+        "parameters" : [
+          " * event - string of the event to unsubscribe;",
+          " * fn - function or list of functions, the callback(s) to remove; if omitted, all callbacks will be unsubscribed from `event`(s)",
+          ""
+        ],
         "stripped_doc" : [
           "Removes one or more event subscriptions",
           ""
         ],
-        "desc" : "Removes one or more event subscriptions",
-        "name" : "unsubscribe",
         "notes" : [
 
         ],
@@ -1532,20 +1577,19 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:unsubscribe(event, fn) -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * event - string of the event to unsubscribe;",
-          " * fn - function or list of functions, the callback(s) to remove; if omitted, all callbacks will be unsubscribed from `event`(s)",
-          ""
-        ]
+        "name" : "unsubscribe"
       },
       {
         "doc" : "Removes all subscriptions from one event\n\nParameters:\n * event - string of the event to unsubscribe; ;\n\nReturns:\n * The `spoon.WatchForMeeting` object for method chaining",
+        "desc" : "Removes all subscriptions from one event",
+        "parameters" : [
+          " * event - string of the event to unsubscribe; ;",
+          ""
+        ],
         "stripped_doc" : [
           "Removes all subscriptions from one event",
           ""
         ],
-        "desc" : "Removes all subscriptions from one event",
-        "name" : "unsubscribeEvent",
         "notes" : [
 
         ],
@@ -1555,13 +1599,9 @@
           " * The `spoon.WatchForMeeting` object for method chaining"
         ],
         "def" : "WatchForMeeting:unsubscribeEvent(event) -> spoon.WatchForMeeting",
-        "parameters" : [
-          " * event - string of the event to unsubscribe; ;",
-          ""
-        ]
+        "name" : "unsubscribeEvent"
       }
     ],
-    "doc" : "A Spoon to answer the question\n> Are you in a meeting?\n\nWatches to see if:\n1) A supported application is running\n2) Are you on a call\n3) Are you on mute, is your camera on, and\/or are you screen sharing\n\nAnd then lets you share that information.\n\n# Installation & Basic Usage\nDownload the [Latest Release](https:\/\/github.com\/asp55\/WatchForMeeting.spoon\/releases\/latest) and unzip to `~\/.hammerspoon\/Spoons\/`\n\nTo get going right out of the box, in your `~\/.hammerspoon\/init.lua` add these lines:\n```\nhs.loadSpoon(\"WatchForMeeting\")\nspoon.WatchForMeeting:start()\n```\n\nThis will start the spoon monitoring for zoom calls, and come with the default status page, and menubar configurations.",
     "name" : "WatchForMeeting"
   }
 ]
