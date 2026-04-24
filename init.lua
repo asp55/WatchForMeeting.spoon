@@ -149,7 +149,6 @@ local log = hs.logger.new('WatchMeeting')
 
 local logSetter = function (_, key, value)
    if(key=="level") then
-      print("Update all logger levels")
       EventHandler.logger.level = value
       TeamsMonitor.logger.level = value
       ZoomMonitor.logger.level = value
