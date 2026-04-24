@@ -7,7 +7,7 @@ TeamsMonitor.name = 'WatchForMeeting.TeamsMonitor'
 TeamsMonitor.appName = "teams"
 TeamsMonitor.version = "0"
 
-TeamsMonitor.logger = hs.logger.new(TeamsMonitor.name, 5)
+TeamsMonitor.logger = hs.logger.new(TeamsMonitor.name)
 
 
 

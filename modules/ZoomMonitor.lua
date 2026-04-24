@@ -4,7 +4,7 @@ local ZoomMonitor={}
 ZoomMonitor.name = 'WatchForMeeting.ZoomMonitor'
 ZoomMonitor.appName = "zoom"
 
-ZoomMonitor.logger = hs.logger.new(ZoomMonitor.name, 5)
+ZoomMonitor.logger = hs.logger.new(ZoomMonitor.name)
 
 local running = false
 
