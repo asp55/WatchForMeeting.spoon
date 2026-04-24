@@ -120,7 +120,6 @@ local checkMeetingStatus = hs.timer.new(0.5, function()
     if(currentlyInMeeting() == false) then
       -- No longer in a meeting, stop watching the meeting
       startStopWatchMeeting()
-      EventHandler:emit(EventHandler.events.meetingChange)
       return
     elseif(zoom) then
       --Watch for zoom menu items
@@ -157,12 +156,17 @@ end
 -- Monitor zoom for running meeting
 hs.application.enableSpotlightForNameSearches(true)
 
-local zoomWindowFilter = hs.window.filter.new(false,"ZoomWindowFilterLog",0):setAppFilter('zoom.us')
-zoomWindowFilter:subscribe(hs.window.filter.hasWindow,checkZoom,true)
-zoomWindowFilter:subscribe(hs.window.filter.hasNoWindows,checkZoom)
-zoomWindowFilter:subscribe(hs.window.filter.windowDestroyed,checkZoom)
-zoomWindowFilter:subscribe(hs.window.filter.windowTitleChanged,checkZoom)
-zoomWindowFilter:pause()
+-- filters - table, every element will set an application filter; these elements must: 
+-- - have a key of type string, denoting an application name as per hs.application:name() 
+--  - if the value is a boolean, the app will be allowed or rejected accordingly 
+--      - see hs.window.filter:allowApp() and hs.window.filter:rejectApp() 
+--  - if the value is a table, it must contain the accept/reject rules for the app as key/value pairs; valid keys and values are described in hs.window.filter:setAppFilter() 
+-- - the key can be one of the special strings "default" and "override", which will set the default and override filter respectively 
+-- - the key can be the special string "sortOrder"; the value must be one of the sortBy... constants as per hs.window.filter:setSortOrder()
+
+-- local zoomWindowFilter = hs.window.filter.new(false,"ZoomWindowFilterLog",0):setAppFilter('zoom.us')
+local zoomWindowFilter = hs.window.filter.new({["zoom.us"]={}},"ZoomWindowFilterLog",0):pause()
+
 -------------------------------------------
 -- End of Zoom Monitor
 -------------------------------------------
@@ -172,14 +176,22 @@ function ZoomMonitor:start()
     ZoomMonitor.logger.d("ZoomMonitor:start()"..((running and " - skipping") or " - starting"))
     if not running then
         running = true
-        zoomWindowFilter:resume()
+        zoomWindowFilter:resume():subscribe(
+            {
+                hs.window.filter.hasWindow,
+                hs.window.filter.windowDestroyed,
+                hs.window.filter.windowTitleChanged
+            },
+            checkZoom,
+            true
+        )
     end
     return self
 end
 
 function ZoomMonitor:stop()
     ZoomMonitor.logger.d("ZoomMonitor:stop()")
-    zoomWindowFilter:pause()
+    zoomWindowFilter:unsubscribeAll():pause()
     running = false
     return self
 end
