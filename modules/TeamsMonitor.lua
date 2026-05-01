@@ -151,9 +151,9 @@ local function onTeamsMessage(wsType, message)
             teamsPairing = false
         end
 
-        if parsed.meetingUpdate and parsed.meetingUpdate.meetingState then
+        if parsed.meetingUpdate then
             local ms = parsed.meetingUpdate.meetingState
-            if ms.isInMeeting then
+            if ms and ms.isInMeeting then
                 local newState = {
                     mic_open = not ms.isMuted,
                     video_on = ms.isVideoOn,
