@@ -1,3 +1,7 @@
+--- === WatchForMeeting.TeamsMonitor ===
+---
+--- Monitors Microsoft Teams meeting state.
+
 -------------------------------------------
 -- Teams Monitor
 -------------------------------------------
@@ -12,7 +16,7 @@ TeamsMonitor.logger = hs.logger.new(TeamsMonitor.name)
 
 
 
---- TeamsMonitor.meetingState
+--- WatchForMeeting.TeamsMonitor.meetingState
 --- Variable
 --- (Read-only) Either false (when not in a meeting) or a table (when in a meeting)
 ---@type boolean | table
@@ -30,14 +34,14 @@ local running = false
 
 
 -- Events
---- TeamsMonitor.events.meetingChange
+--- WatchForMeeting.TeamsMonitor.events.meetingChange
 --- Constant
 --- Pseudo-event for `TeamsMonitor:subscribe()`: The meeting state has changed
 
 local EventHandler = dofile(hs.spoons.resourcePath("EventHandler.lua"))({"meetingChange"}, TeamsMonitor.name)
 
 
---- TeamsMonitor:subscribe(event, fn) -> TeamsMonitor object
+--- WatchForMeeting.TeamsMonitor:subscribe(event, fn) -> TeamsMonitor object
 --- Method
 --- Subscribe to one event with one or more functions
 ---
@@ -54,7 +58,7 @@ function TeamsMonitor:subscribe(event, fns)
     return self
 end
 
---- TeamsMonitor:unsubscribe(event, fn) -> TeamsMonitor
+--- WatchForMeeting.TeamsMonitor:unsubscribe(event, fn) -> TeamsMonitor
 --- Method
 --- Removes one or more event subscriptions
 ---
@@ -71,7 +75,7 @@ function TeamsMonitor:unsubscribe(event,fn)
     return self
 end
 
---- TeamsMonitor:unsubscribeEvent(event) -> TeamsMonitor
+--- WatchForMeeting.TeamsMonitor:unsubscribeEvent(event) -> TeamsMonitor
 --- Method
 --- Removes all subscriptions from one event
 ---
@@ -89,9 +93,12 @@ end
 
 
 
---- TeamsMonitor:unsubscribeAll() -> TeamsMonitor
+--- WatchForMeeting.TeamsMonitor:unsubscribeAll() -> TeamsMonitor
 --- Method
---- Removes all subscriptions from one event
+--- Removes all subscriptions from all events
+---
+--- Parameters:
+---  * None
 ---
 --- Returns:
 ---  * The `TeamsMonitor` object for method chaining
@@ -225,7 +232,7 @@ connectToTeams = function()
     end)
 end
 
---- TeamsMonitor:start() -> TeamsMonitor
+--- WatchForMeeting.TeamsMonitor:start() -> TeamsMonitor
 --- Method
 --- Starts a TeamsMonitor object
 ---
@@ -244,7 +251,7 @@ function TeamsMonitor:start()
     return self
 end
 
---- TeamsMonitor:stop() -> TeamsMonitor
+--- WatchForMeeting.TeamsMonitor:stop() -> TeamsMonitor
 --- Method
 --- Stops a TeamsMonitor object
 ---

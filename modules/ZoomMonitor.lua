@@ -1,3 +1,7 @@
+--- === WatchForMeeting.ZoomMonitor ===
+---
+--- Monitors Zoom meeting state.
+
 
 
 local ZoomMonitor={}
@@ -14,13 +18,13 @@ local running = false
 
 
 -- Events
---- ZoomMonitor.events.meetingChange
+--- WatchForMeeting.ZoomMonitor.events.meetingChange
 --- Constant
 --- Pseudo-event for `ZoomMonitor:subscribe()`: The meeting state has changed
 local EventHandler = dofile(hs.spoons.resourcePath("EventHandler.lua"))({"meetingChange"}, ZoomMonitor.name)
 
 
---- ZoomMonitor:subscribe(event, fn) -> ZoomMonitor
+--- WatchForMeeting.ZoomMonitor:subscribe(event, fn) -> ZoomMonitor
 --- Method
 --- Subscribe to one event with one or more functions
 ---
@@ -37,7 +41,7 @@ function ZoomMonitor:subscribe(event, fns)
     return self
 end
 
---- ZoomMonitor:unsubscribe(event, fn) -> ZoomMonitor
+--- WatchForMeeting.ZoomMonitor:unsubscribe(event, fn) -> ZoomMonitor
 --- Method
 --- Removes one or more event subscriptions
 ---
@@ -54,7 +58,7 @@ function ZoomMonitor:unsubscribe(event,fn)
     return self
 end
 
---- ZoomMonitor:unsubscribeEvent(event) -> ZoomMonitor
+--- WatchForMeeting.ZoomMonitor:unsubscribeEvent(event) -> ZoomMonitor
 --- Method
 --- Removes all subscriptions from one event
 ---
@@ -71,9 +75,12 @@ function ZoomMonitor:unsubscribeEvent(event)
  end
 
 
---- ZoomMonitor:unsubscribeAll() -> ZoomMonitor
+--- WatchForMeeting.ZoomMonitor:unsubscribeAll() -> ZoomMonitor
 --- Method
---- Removes all subscriptions from one event
+--- Removes all subscriptions from all events
+---
+--- Parameters:
+---  * None
 ---
 --- Returns:
 ---  * The `ZoomMonitor` object for method chaining
@@ -95,12 +102,12 @@ function ZoomMonitor:unsubscribeAll()
 -------------------------------------------
 
 
---- ZoomMonitor.zoom
+--- WatchForMeeting.ZoomMonitor.zoom
 --- Variable
 --- (Read-only) The hs.application for zoom if it is running, otherwise nil
 local zoom = nil
 
---- ZoomMonitor.meetingState
+--- WatchForMeeting.ZoomMonitor.meetingState
 --- Variable
 --- (Read-only) Either false (when not in a meeting) or a table (when in a meeting)
 ---@type boolean | table
